@@ -1,0 +1,1 @@
+This folder contains script to generate cert authority , admin and any other common token, cert etc.
