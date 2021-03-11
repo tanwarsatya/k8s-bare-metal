@@ -70,3 +70,14 @@ cfssl gencert \
   -profile=default \
   config/kube-api-server-csr.json | cfssljson -bare certs/kubernetes
 echo "**********************************"
+
+echo "**********************************"
+echo "5. Generating service-account cert"
+echo "--------------------------------"
+cfssl gencert \
+  -ca=../cert-authority/certs/ca.pem \
+  -ca-key=../cert-authority/certs/ca-key.pem \
+  -config=../cert-authority/config/ca-config.json \
+  -profile=default \
+  config/service-account-csr.json | cfssljson -bare certs/service-account
+echo "**********************************"
