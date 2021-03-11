@@ -1,5 +1,5 @@
 {
-    "CN": "K8S BARE METAL ROOT CA",
+    "CN": "system:kube-proxy",
     "key": {
       "algo": "rsa",
       "size": 2048
@@ -8,8 +8,8 @@
       {
         "C": "US",
         "L": "Boston",
-        "O": "K8S BARE METAL",
-        "OU": "K8S BARE METAL ROOT CA",
+        "O": "system:node-proxier",
+        "OU": "K8S BARE METAL",
         "ST": "Massachusetts"
       }
     ]

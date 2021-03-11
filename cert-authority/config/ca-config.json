@@ -4,8 +4,8 @@
         "expiry": "8760h"
       },
       "profiles": {
-        "kubernetes": {
-          "usages": ["signing", "key encipherment", "server auth", "client auth"],
+        "default": {
+          "usages": ["signing", "digital signature","key encipherment", "cert sign","crl sign","server auth", "client auth"],
           "expiry": "8760h"
         }
       }
