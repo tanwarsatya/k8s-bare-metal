@@ -89,7 +89,6 @@ resources:
       - identity: {}
 EOF
 echo "**********************************"
-
 echo "5. Generating haproxy.config"
 echo "--------------------------------"
 cat > config/haproxy.cfg <<EOF  
@@ -107,3 +106,4 @@ backend kubernetes-master-nodes
     server k8s-master-2 192.168.1.22:6443 check fall 3 rise 2
     server k8s-master-3 192.168.1.21:6443 check fail 3 rise 2
 EOF
+echo "**********************************"

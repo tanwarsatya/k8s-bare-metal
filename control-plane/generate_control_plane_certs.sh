@@ -36,7 +36,7 @@ echo "**********************************"
 
 
 echo "**********************************"
-echo "4. Generating kube-api-server cert"
+echo "4. Generating kube-apiserver cert"
 echo "--------------------------------"
 
 # Set host names to be used
@@ -68,7 +68,7 @@ cfssl gencert \
   -config=../cert-authority/config/ca-config.json \
   -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${CONTROL_PLANE_NODE_IPS} \
   -profile=default \
-  config/kube-api-server-csr.json | cfssljson -bare certs/kubernetes
+  config/kube-apiserver-csr.json | cfssljson -bare certs/kub-apiserver
 echo "**********************************"
 
 echo "**********************************"
