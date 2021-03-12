@@ -5,49 +5,63 @@ echo "control plane - generate configuration files"
 echo "--------------------------------"
 echo "1. Generating kube-controller-manager.kubeconfig"
 echo "--------------------------------"
+
+# create output directory
+sudo mkdir -p output
+
 {
   kubectl config set-cluster k8s-bare-metal \
     --certificate-authority=../cert-authority/certs/ca.pem \
     --embed-certs=true \
     --server=https://127.0.0.1:6443 \
-    --kubeconfig=config/kube-controller-manager.kubeconfig
+    --kubeconfig=output/kube-controller-manager.kubeconfig
 
   kubectl config set-credentials system:kube-controller-manager \
-    --client-certificate=certs/kube-controller-manager.pem \
-    --client-key=certs/kube-controller-manager-key.pem \
+    --client-certificate=output/kube-controller-manager.pem \
+    --client-key=output/kube-controller-manager-key.pem \
     --embed-certs=true \
-    --kubeconfig=config/kube-controller-manager.kubeconfig
+    --kubeconfig=output/kube-controller-manager.kubeconfig
 
   kubectl config set-context default \
     --cluster=k8s-bare-metal \
     --user=system:kube-controller-manager \
-    --kubeconfig=config/kube-controller-manager.kubeconfig
+    --kubeconfig=output/kube-controller-manager.kubeconfig
 
-  kubectl config use-context default --kubeconfig=config/kube-controller-manager.kubeconfig
+  kubectl config use-context default --kubeconfig=output/kube-controller-manager.kubeconfig
 }
 echo "**********************************"
-echo "2. Generating kube-scheduler.kubeconfig"
+echo "2. Generating kube-scheduler.kubeconfig and kube-scheduler.yaml"
 echo "--------------------------------"
 {
   kubectl config set-cluster k8s-bare-metal \
     --certificate-authority=../cert-authority/certs/ca.pem \
     --embed-certs=true \
     --server=https://127.0.0.1:6443 \
-    --kubeconfig=config/kube-scheduler.kubeconfig
+    --kubeconfig=output/kube-scheduler.kubeconfig
 
   kubectl config set-credentials system:kube-controller-manager \
-    --client-certificate=certs/kube-scheduler.pem \
-    --client-key=certs/kube-scheduler-key.pem \
+    --client-certificate=output/kube-scheduler.pem \
+    --client-key=output/kube-scheduler-key.pem \
     --embed-certs=true \
-    --kubeconfig=config/kube-scheduler.kubeconfig
+    --kubeconfig=output/kube-scheduler.kubeconfig
 
   kubectl config set-context default \
     --cluster=k8s-bare-metal \
     --user=system:kube-scheduler \
-    --kubeconfig=config/kube-scheduler.kubeconfig
+    --kubeconfig=output/kube-scheduler.kubeconfig
 
-  kubectl config use-context default --kubeconfig=config/kube-scheduler.kubeconfig
+  kubectl config use-context default --kubeconfig=output/kube-scheduler.kubeconfig
 }
+
+cat > output/kube-scheduler.yaml <<EOF 
+apiVersion: kubescheduler.config.k8s.io/v1alpha1
+kind: KubeSchedulerConfiguration
+clientConnection:
+  kubeconfig: "/var/lib/kubernetes/kube-scheduler.kubeconfig"
+leaderElection:
+  leaderElect: true
+EOF
+
 echo "**********************************"
 echo "3. Generating admin.kubeconfig"
 echo "--------------------------------"
@@ -56,26 +70,26 @@ echo "--------------------------------"
     --certificate-authority=../cert-authority/certs/ca.pem \
     --embed-certs=true \
     --server=https://127.0.0.1:6443 \
-    --kubeconfig=config/admin.kubeconfig
+    --kubeconfig=output/admin.kubeconfig
 
   kubectl config set-credentials system:kube-controller-manager \
-    --client-certificate=certs/admin.pem \
-    --client-key=certs/admin-key.pem \
+    --client-certificate=output/admin.pem \
+    --client-key=output/admin-key.pem \
     --embed-certs=true \
-    --kubeconfig=config/admin.kubeconfig
+    --kubeconfig=output/admin.kubeconfig
 
   kubectl config set-context default \
     --cluster=k8s-bare-metal \
     --user=admin \
-    --kubeconfig=config/admin.kubeconfig
+    --kubeconfig=output/admin.kubeconfig
 
-  kubectl config use-context default --kubeconfig=config/admin.kubeconfig
+  kubectl config use-context default --kubeconfig=output/admin.kubeconfig
 }
 echo "**********************************"
 echo "4. Generating encryption-config.yaml"
 echo "--------------------------------"
 ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
-cat > config/encryption-config.yaml <<EOF
+cat > output/encryption-config.yaml <<EOF
 kind: EncryptionConfig
 apiVersion: v1
 resources:
@@ -91,9 +105,12 @@ EOF
 echo "**********************************"
 echo "5. Generating haproxy.config"
 echo "--------------------------------"
-cat > config/haproxy.cfg <<EOF  
+LOAD_BALANCER_NODE="k8s-master-lb"
+LOAD_BALANCER_IP=( $(host ${LOAD_BALANCER_NODE} | grep -oP "192.168.*.*")  )
+
+cat > output/haproxy.cfg <<EOF  
 frontend kubernetes
-    bind 192.168.1.31:6443
+    bind ${LOAD_BALANCER_IP}:6443
     option tcplog
     mode tcp
     default_backend kubernetes-master-nodes

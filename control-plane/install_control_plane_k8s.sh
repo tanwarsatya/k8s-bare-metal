@@ -15,8 +15,8 @@ echo "--------------------------------"
 
 echo "Stop and disable etcd..."
 # stop and disable etcd services if running
-sudo systemctl stop etcd
-sudo systemctl disable etcd
+sudo systemctl stop etcd kube-apiserver kube-scheduler kube-controller-manager
+sudo systemctl disable etcd kube-apiserver kube-scheduler kube-controller-manager
 
 echo "Stop and disable kube-apiserver..."
 # stop and disable etcd services if running
@@ -48,7 +48,18 @@ cfssl gencert -initca ../cert-authority/config/ca-csr.json | cfssljson -bare ../
 fi
 
 echo "--------------------------------"
-echo "2. Downlaod ETCD binaries "
+echo "2. Generate Control Plane certs "
+echo "--------------------------------"
+sudo bash generate_control_plane_certs.sh
+
+echo "--------------------------------"
+echo "3. Generate Control Plane configs "
+echo "--------------------------------"
+sudo bash generate_control_plane_configs.sh
+
+
+echo "--------------------------------"
+echo "2. Downlaod binaries "
 echo "--------------------------------"
 
 # echo "Download and extract etcd binaries - etcd v3.4.10"
@@ -73,20 +84,42 @@ do
     NODE_IP=( $(host $i | grep -oP "192.168.*.*")  )
 
     echo "Installation running on Node : ${NODE_NAME}"
-
-    echo "Creating etcd directories"
-    ssh -i /home/stanwar/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@${NODE_NAME} 'sudo mkdir -p /etc/etcd /var/lib/etcd' 
+    echo "________________________________________________________"
     
-    #sudo mkdir -p /etc/etcd /var/lib/etcd;
-    #sudo chmod 700 /var/lib/etcd
+    echo "sync the k8s_bare_metal folder to the node"
+    sudo rsync -avz  -e "ssh -v -o StrictHostKeyChecking=no -i $HOME/.ssh/id_rsa" k8s-bare-metal $SSH_USER@$NODE_NAME:/home/$SSH_USER
+
+    # echo "Creating etcd directories"
+    # ssh -i /home/$SSH_USER/.ssh/id_rsa -o StrictHostKeyChecking=no $SSH_USER@$NODE_NAME /bin/bash << EOF 
+    
+    # #echo create k8s_bare_metal directory
+
+    # echo "download the  hub
+    # sudo mkdir -p /home/$SSH_USER/k8s_bare_metal
+    # sudo chmod -R 777 /home/$SSH_USER/k8s_bare_metal; 
+    # sudo mkdir -p /home/$SSH_USER/k8s_bare_metal
+
+
+    # # Disale existing services
+    # echo "stop and disable etcd service";
+    # sudo systemctl stop etcd 
+    # sudo systemctl disable etcd 
+    
+    # # Create directories for etcd
+    
+    # echo "Creating etcd directories"
+    # sudo mkdir -p /etc/etcd /var/lib/etcd;
+    # sudo chmod 700 /etc/etcd; echo "--------------------------------"
+
+
+    # sudo chmod 700 /var/lib/etcd; 
+
 
     
+    #EOF
 
-    #echo "Copy certs"
-   # scp -i ~/.ssh/id_rsa ../cert-authority/certs/ca.pem output/etcd.pem output/etcd-key.pem ${SSH_USER}@${NODE_NAME}:/etc/etcd
-
-    #echo "Copy etcd binaries"
-   # scp -i ~/.ssh/id_rsa binaries/etcd-v3.4.10-linux-amd64/etcd*  ${SSH_USER}@${NODE_NAME}:/usr/local/bin
+    # echo "Copy certs"
+    # scp -i /home/$SSH_USER/.ssh/id_rsa ../cert-authority/certs/ca.pem output/etcd.pem output/etcd-key.pem $SSH_USER@$NODE_NAME:/home/$SSH_USER/k8s_bare_metal
 
     #echo "Copy etcd.service file"
    # scp -i ~/.ssh/id_rsa output/etcd.service ${SSH_USER}@${NODE_NAME}:/etc/systemd/system

@@ -6,6 +6,9 @@ echo "--------------------------------"
 echo "1. Generating kube-proxy.kubeconfig"
 echo "--------------------------------"
 
+# create output directory
+sudo mkdir -p output
+
 # KUBE_MASTER_LB using HA PROXY
 KUBE_MASTER_LB = "k8s-master-lb"
 KUBE_API_MASTER_LB_IP_ADDRESS = $(host $KUBE_MASTER_LB | grep -oP "192.168.*.*")

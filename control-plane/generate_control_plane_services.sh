@@ -3,13 +3,18 @@ echo "k8s-bare-metal"
 echo "--------------------------------"
 echo "control plane - generate service files"
 
+# create output directory
+sudo mkdir -p output
+
 # Prep Steps
 #------------------------------------------------------------------------------------
 #etcd service is installed on master nodes only along with api, scheduler and controller
-# get public ip address for control plane nodes
+# Set the defailts
+CONTROL_PLANE_CLUSTER_CIDR = "10.200.0.0/16"
+CONTROL_PLANE_SERVICE_IP_RANGE = "10.32.0.0/16"
+
 # Get nodes list from the file
 mapfile -t NODE_HOSTNAMES < control-plane-nodes.txt
-
 # Loop to create a various cluster strings 
 for i in "${NODE_HOSTNAMES[@]}"
 do
@@ -31,8 +36,9 @@ do
     ETCD_NAME=( $i )
     ETCD_IP=( $(host $i | grep -oP "192.168.*.*")  )
 
-
-    cat > config/${FILE_NAME}  <<EOF 
+if [ "$ETCD_IP" != "" ]; then
+   
+    cat > output/${FILE_NAME}  <<EOF 
     [Unit]
     Description=etcd
     Documentation=https://github.com/coreos
@@ -41,10 +47,10 @@ do
     Type=notify
     ExecStart=/usr/local/bin/etcd \\
       --name ${ETCD_NAME} \\
-      --cert-file=/etc/etcd/kubernetes.pem \\
-      --key-file=/etc/etcd/kubernetes-key.pem \\
-      --peer-cert-file=/etc/etcd/kubernetes.pem \\
-      --peer-key-file=/etc/etcd/kubernetes-key.pem \\
+      --cert-file=/etc/etcd/etcd.pem \\
+      --key-file=/etc/etcd/etcd-key.pem \\
+      --peer-cert-file=/etc/etcd/etcd.pem \\
+      --peer-key-file=/etc/etcd/etcd-key.pem \\
       --trusted-ca-file=/etc/etcd/ca.pem \\
       --peer-trusted-ca-file=/etc/etcd/ca.pem \\
       --peer-client-cert-auth \\
@@ -63,6 +69,9 @@ do
     [Install]
     WantedBy=multi-user.target
 EOF
+else
+      echo "Node: $i : is down and etcd.service file can't be generated."
+fi
 done
 
 
@@ -76,7 +85,8 @@ do
     NODE_NAME=( $i )
     NODE_IP=( $(host $i | grep -oP "192.168.*.*")  )
 
-cat > config/kube-apiserver.service  <<EOF 
+if [ "$ETCD_IP" != "" ]; then
+cat > output/kube-apiserver.service  <<EOF 
 [Unit]
 Description=Kubernetes API Server
 Documentation=https://github.com/kubernetes/kubernetes
@@ -117,4 +127,61 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOF
+
+else
+      echo "Node: $i : is down and kube-apiserver.service file can't be generated."
+fi
 done
+
+echo "********************************"
+echo "3. Generating kube-controller-manager.service "
+echo "--------------------------------"
+
+cat > output/kube-controller-manager.service  <<EOF 
+[Unit]
+Description=Kubernetes Controller Manager
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+ExecStart=/usr/local/bin/kube-controller-manager \\
+  --bind-address=0.0.0.0 \\
+  --cluster-cidr=${CONTROL_PLANE_CLUSTER_CIDR} \\
+  --cluster-name=kubernetes \\
+  --cluster-signing-cert-file=/var/lib/kubernetes/ca.pem \\
+  --cluster-signing-key-file=/var/lib/kubernetes/ca-key.pem \\
+  --kubeconfig=/var/lib/kubernetes/kube-controller-manager.kubeconfig \\
+  --leader-elect=true \\
+  --root-ca-file=/var/lib/kubernetes/ca.pem \\
+  --service-account-private-key-file=/var/lib/kubernetes/service-account-key.pem \\
+  --service-cluster-ip-range=${CONTROL_PLANE_SERVICE_IP_RANGE} \\
+  --use-service-account-credentials=true \\
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+
+echo "********************************"
+echo "4. Generating kube-schduler.service "
+echo "--------------------------------"
+
+
+
+cat > output/kube-scheduler.service <<EOF 
+[Unit]
+Description=Kubernetes Scheduler
+Documentation=https://github.com/kubernetes/kubernetes
+
+[Service]
+ExecStart=/usr/local/bin/kube-scheduler \\
+  --config=/etc/kubernetes/config/kube-scheduler.yaml \\
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
