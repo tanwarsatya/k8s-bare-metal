@@ -29,9 +29,11 @@ fi
 # Generate control plane certs
 sudo bash generate_control_plane_certs.sh
 
-# Generate conro
+# Generate config files
 sudo bash generate_control_plane_configs.sh
 
+# generate service files
+sudo bash generate_control_plane_services.sh
 
 echo "--------------------------------"
 echo "Downlaod binaries "
@@ -87,10 +89,28 @@ do
       sudo chmod 700 /etc/etcd; 
       sudo chmod 700 /var/lib/etcd; 
 
-    # copy etcd,etcdctl to /usr/local/bin
-      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/binaries/etcd-v3.4.10-linux-amd64/etcd* /usr/local/bin 
+    # copy required certs
+      echo "copy ca.pem etcd.pem and etcd-key.pem to /etcd/etcd directory"
+      sudo cp /home/$SSH_USER/k8s-bare-metal/cert-authority/certs/ca.pem \
+              /home/$SSH_USER/k8s-bare-metal/control-plane/output/etcd.pem \
+              /home/$SSH_USER/k8s-bare-metal/control-plane/output/etcd-key.pem \
+              /etc/etcd 
 
+    # copy etcd,etcdctl to /usr/local/bin
+      echo "copy etcd binaries to /usr/local/bin"
+      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/binaries/etcd-v3.4.10-linux-amd64/etcd* /usr/local/bin 
     
+    # copy etcd.service to /etc/systemd/system directory
+      echo "copy $NODE_NAME.etcd.service to /etc/systemd/system"
+      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/output/${NODE_NAME}.etcd.service /etc/systemd/system/etcd.service
+
+    # start the service
+      echo "enable and start the etcd" 
+      sudo systemctl daemon-reload
+      sudo systemctl enable etcd
+      sudo systemctl start etcd
+    
+
 EOF
 
 

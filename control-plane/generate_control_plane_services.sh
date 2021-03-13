@@ -20,7 +20,7 @@ for i in "${NODE_HOSTNAMES[@]}"
 do
    # Change the pattern of ip address on basis of DHCP address assigned for your nodes
 
-   ETCD_SVC_INITIAL_CLUSTER_STRING+="${i}=$(host $i | grep -oP "192.168.*.*"):2380,"
+   ETCD_SVC_INITIAL_CLUSTER_STRING+="${i}=https://$(host $i | grep -oP "192.168.*.*"):2380,"
    API_SERVER_SVC_ETCD_CLUSTER_STRING+="https://$(host $i | grep -oP "192.168.*.*"):2379,"
 done
 
@@ -60,7 +60,7 @@ if [ "$ETCD_IP" != "" ]; then
       --listen-client-urls https://${ETCD_IP}:2379,https://127.0.0.1:2379 \\
       --advertise-client-urls https://${ETCD_IP}:2379 \\
       --initial-cluster-token etcd-cluster-0 \\
-      --initial-cluster ${ETCD_SVC_INITIAL_CLUSTER_STRING::-1} \\ 
+      --initial-cluster ${ETCD_SVC_INITIAL_CLUSTER_STRING::-1} \\
       --initial-cluster-state new \\
       --data-dir=/var/lib/etcd 
     Restart=on-failure

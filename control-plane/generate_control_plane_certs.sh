@@ -26,7 +26,7 @@ do
 done
 
 # convert to a comma seperated IP string
-CONTROL_PLANE_NODE_IPS=$(IFS=,; echo "{${NODE_IPS[*]}}")
+CONTROL_PLANE_NODE_IPS=$(IFS=,; echo "${NODE_IPS[*]}")
 
 cfssl gencert \
   -ca=../cert-authority/certs/ca.pem \
