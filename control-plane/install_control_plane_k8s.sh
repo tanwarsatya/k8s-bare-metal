@@ -1,18 +1,17 @@
 #!/bin/sh
+
+
+# import vairables
+source variables.sh
+
+
+
 echo "k8s-bare-metal"
 echo "--------------------------------"
 echo "control plane k8s - installation"
 
 
-# set default variables
-SSH_USER="stanwar"
-SSH_CERT="/home/stanwar/.ssh/id_rsa"
 
-
-echo "Stop and disable installed services"
-# stop and disable etcd services if running
-#sudo systemctl stop etcd kube-apiserver kube-scheduler kube-controller-manager
-#sudo systemctl disable etcd kube-apiserver kube-scheduler kube-controller-manager
 
 #generate root cert if not available 
 CA_PEM_FILE=../cert-authority/certs/ca.pem
@@ -53,7 +52,7 @@ echo "--------------------------------"
 
 mapfile -t NODE_HOSTNAMES < control-plane-nodes.txt
 
-for i in "${NODE_HOSTNAMES[@]}"
+for i in "${CONTROL_PLANE_ETCD_NODES[@]}"
 do
    
     
@@ -64,18 +63,18 @@ do
     echo "________________________________________________________"
     
     echo "sync the k8s_bare_metal folder to the node"
-    sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../../k8s-bare-metal $SSH_USER@$NODE_NAME:/home/$SSH_USER
+    sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $CONTROL_PLANE_SSH_CERT" ../../k8s-bare-metal $CONTROL_PLANE_SSH_USER@$NODE_NAME:/home/$CONTROL_PLANE_SSH_USER
 
     echo "executing remote shell commands"
     
-    ssh -i $SSH_CERT -o StrictHostKeyChecking=no $SSH_USER@$NODE_NAME /bin/bash << EOF 
+    ssh -i $CONTROL_PLANE_SSH_CERT -o StrictHostKeyChecking=no $CONTROL_PLANE_SSH_USER@$NODE_NAME /bin/bash << EOF 
     
    
 
     # echo "download the
-    # sudo mkdir -p /home/$SSH_USER/k8s_bare_metal
-    # sudo chmod -R 777 /home/$SSH_USER/k8s_bare_metal; 
-    # sudo mkdir -p /home/$SSH_USER/k8s_bare_metal
+    # sudo mkdir -p /home/$CONTROL_PLANE_SSH_USER/k8s_bare_metal
+    # sudo chmod -R 777 /home/$CONTROL_PLANE_SSH_USER/k8s_bare_metal; 
+    # sudo mkdir -p /home/$CONTROL_PLANE_SSH_USER/k8s_bare_metal
 
 
     # Disale existing services
@@ -91,18 +90,18 @@ do
 
     # copy required certs
       echo "copy ca.pem etcd.pem and etcd-key.pem to /etcd/etcd directory"
-      sudo cp /home/$SSH_USER/k8s-bare-metal/cert-authority/certs/ca.pem \
-              /home/$SSH_USER/k8s-bare-metal/control-plane/output/etcd.pem \
-              /home/$SSH_USER/k8s-bare-metal/control-plane/output/etcd-key.pem \
+      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/cert-authority/certs/ca.pem \
+              /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/etcd.pem \
+              /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/etcd-key.pem \
               /etc/etcd 
 
     # copy etcd,etcdctl to /usr/local/bin
       echo "copy etcd binaries to /usr/local/bin"
-      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/binaries/etcd-v3.4.10-linux-amd64/etcd* /usr/local/bin 
+      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/binaries/etcd-v3.4.10-linux-amd64/etcd* /usr/local/bin 
     
     # copy etcd.service to /etc/systemd/system directory
       echo "copy $NODE_NAME.etcd.service to /etc/systemd/system"
-      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/output/${NODE_NAME}.etcd.service /etc/systemd/system/etcd.service
+      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/${NODE_NAME}.etcd.service /etc/systemd/system/etcd.service
 
     # start the service
       echo "enable and start the etcd" 

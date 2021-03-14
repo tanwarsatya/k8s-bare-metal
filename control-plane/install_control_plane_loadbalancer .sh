@@ -1,4 +1,8 @@
 #!/bin/sh
+
+# import the variables source file
+source variables.sh
+
 echo "k8s-bare-metal"
 echo "--------------------------------"
 echo "control plane k8s - installation"

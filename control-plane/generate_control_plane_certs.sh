@@ -1,4 +1,9 @@
 #!/bin/sh
+
+# import vairables
+source variables.sh
+
+
 echo "k8s-bare-metal"
 echo "--------------------------------"
 echo "control plane - generate certs"
@@ -14,19 +19,11 @@ sudo mkdir -p output
 # Get nodes list from the file
 mapfile -t NODE_HOSTNAMES < control-plane-nodes.txt
 #declare a node-ips array
-declare -a NODE_IPS=()
 
-# Get the ip address of nodes 
-for i in "${NODE_HOSTNAMES[@]}"
-do
-   # Change the pattern of ip address on basis of DHCP address assigned for your nodes
 
-  NODE_IPS+=( "$(host $i | grep -oP "192.168.*.*")" )
- 
-done
 
-# convert to a comma seperated IP string
-CONTROL_PLANE_NODE_IPS=$(IFS=,; echo "${NODE_IPS[*]}")
+
+
 
 cfssl gencert \
   -ca=../cert-authority/certs/ca.pem \
@@ -60,7 +57,17 @@ cfssl gencert \
 
 echo "4. Generating kube-apiserver cert"
 
+# Get the ip address of nodes 
+declare -a CONTROL_PLANE_NODE_IPS=()
+for i in "${CONTROL_PLANE_NODES[@]}"
+do
+   # Change the pattern of ip address on basis of DHCP address assigned for your nodes
 
+  CONTROL_PLANE_NODE_IPS+=( "$(host $i | grep -oP "192.168.*.*")" )
+ 
+done
+# convert to a comma seperated IP string
+CONTROL_PLANE_NODE_IPS_STRING=$(IFS=,; echo "${CONTROL_PLANE_NODE_IPS[*]}")
 # Set host names to be used
 KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local
 
@@ -68,7 +75,7 @@ cfssl gencert \
  -ca=../cert-authority/certs/ca.pem \
   -ca-key=../cert-authority/certs/ca-key.pem \
   -config=../cert-authority/config/ca-config.json \
-  -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${CONTROL_PLANE_NODE_IPS} \
+  -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${CONTROL_PLANE_NODE_IPS_STRING} \
   -profile=default \
   config/kube-apiserver-csr.json | cfssljson -bare output/kub-apiserver
 
@@ -77,6 +84,17 @@ cfssl gencert \
 
 echo "4. Generating etcd cert"
 
+# Get the ip address of nodes 
+declare -a ETCD_NODE_IPS=()
+for i in "${CONTROL_PLANE_NODES[@]}"
+do
+   # Change the pattern of ip address on basis of DHCP address assigned for your nodes
+
+  ETCD_NODE_IPS+=( "$(host $i | grep -oP "192.168.*.*")" )
+ 
+done
+# convert to a comma seperated IP string
+ETCD_NODE_IPS_STRING=$(IFS=,; echo "${ETCD_NODE_IPS[*]}")
 
 # Set host names to be used
 KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local
@@ -85,7 +103,7 @@ cfssl gencert \
  -ca=../cert-authority/certs/ca.pem \
   -ca-key=../cert-authority/certs/ca-key.pem \
   -config=../cert-authority/config/ca-config.json \
-  -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${CONTROL_PLANE_NODE_IPS} \
+  -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${ETCD_NODE_IPS_STRING} \
   -profile=default \
   config/etcd-csr.json | cfssljson -bare output/etcd
 

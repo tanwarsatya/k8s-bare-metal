@@ -1,4 +1,9 @@
 #!/bin/sh
+
+# import vairables
+source variables.sh
+
+
 echo "k8s-bare-metal"
 echo "--------------------------------"
 echo "control plane - generate service files"
@@ -9,19 +14,21 @@ sudo mkdir -p output
 # Prep Steps
 #------------------------------------------------------------------------------------
 #etcd service is installed on master nodes only along with api, scheduler and controller
-# Set the defailts
-CONTROL_PLANE_CLUSTER_CIDR = "10.200.0.0/16"
-CONTROL_PLANE_SERVICE_IP_RANGE = "10.32.0.0/16"
 
-# Get nodes list from the file
-mapfile -t NODE_HOSTNAMES < control-plane-nodes.txt
-# Loop to create a various cluster strings 
-for i in "${NODE_HOSTNAMES[@]}"
+
+# Loop to create a api server cluster strings 
+for i in "${CONTROL_PLANE_NODES[@]}"
 do
    # Change the pattern of ip address on basis of DHCP address assigned for your nodes
-
-   ETCD_SVC_INITIAL_CLUSTER_STRING+="${i}=https://$(host $i | grep -oP "192.168.*.*"):2380,"
    API_SERVER_SVC_ETCD_CLUSTER_STRING+="https://$(host $i | grep -oP "192.168.*.*"):2379,"
+done
+
+#loop to create etcd server cluster strings
+for i in "${CONTROL_PLANE_ETCD_NODES[@]}"
+do
+   # Change the pattern of ip address on basis of DHCP address assigned for your nodes
+   ETCD_SVC_INITIAL_CLUSTER_STRING+="${i}=https://$(host $i | grep -oP "192.168.*.*"):2380,"
+   
 done
 
 #-----------------------------------------------------------------------------------
@@ -30,7 +37,7 @@ echo "--------------------------------"
 echo "1. Generating multiple etcd.service for nodes"
 echo "--------------------------------"
 
-for i in "${NODE_HOSTNAMES[@]}"
+for i in "${CONTROL_PLANE_ETCD_NODES[@]}"
 do
     FILE_NAME=( "$i.etcd.service" )
     ETCD_NAME=( $i )
@@ -79,7 +86,7 @@ echo "********************************"
 echo "2. Generating kube-apiserver.service "
 echo "--------------------------------"
 
-for i in "${NODE_HOSTNAMES[@]}"
+for i in "${CONTROL_PLANE_NODES[@]}"
 do
     FILE_NAME=( "$i.kube-apiserver.service" )
     NODE_NAME=( $i )

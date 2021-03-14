@@ -1,4 +1,10 @@
 #!/bin/sh
+
+
+# import vairables
+source variables.sh
+
+
 echo "k8s-bare-metal"
 echo "--------------------------------"
 echo "control plane - generate configuration files"
