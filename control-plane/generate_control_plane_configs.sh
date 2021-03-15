@@ -114,7 +114,14 @@ echo "--------------------------------"
 LOAD_BALANCER_NODE="k8s-master-lb"
 LOAD_BALANCER_IP=( $(host ${LOAD_BALANCER_NODE} | grep -oP "192.168.*.*")  )
 
-cat > output/haproxy.cfg <<EOF  
+# Loop to create a api server cluster strings 
+for i in "${CONTROL_PLANE_NODES[@]}"
+do
+   # Change the pattern of ip address on basis of DHCP address assigned for your nodes
+   API_SERVER_STRING+="\tserver $i $(host $i | grep -oP "192.168.*.*") check fall 3 rise 2\n"
+done
+
+PROXY_CONFIG=$(cat << EOF  
 frontend kubernetes
     bind ${LOAD_BALANCER_IP}:6443
     option tcplog
@@ -125,8 +132,8 @@ backend kubernetes-master-nodes
     mode tcp
     balance roundrobin
     option tcp-check
-    server k8s-master-1 192.168.1.19:6443 check fall 3 rise 2
-    server k8s-master-2 192.168.1.22:6443 check fall 3 rise 2
-    server k8s-master-3 192.168.1.21:6443 check fall 3 rise 2
+    ${API_SERVER_STRING:2}
 EOF
+)
+printf "${PROXY_CONFIG}" > output/haproxy.cfg
 echo "**********************************"
