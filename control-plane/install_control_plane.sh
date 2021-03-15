@@ -35,3 +35,8 @@ sudo bash install_etcd.sh
 
 # Install HaProxy
 sudo bash install_haproxy.sh
+
+# Install K8s control plane components
+sudo bash install_k8s.sh
+
+

@@ -92,8 +92,8 @@ do
     NODE_NAME=( $i )
     NODE_IP=( $(host $i | grep -oP "192.168.*.*")  )
 
-if [ "$ETCD_IP" != "" ]; then
-cat > output/kube-apiserver.service  <<EOF 
+if [ "$NODE_IP" != "" ]; then
+cat > output/${FILE_NAME}  <<EOF 
 [Unit]
 Description=Kubernetes API Server
 Documentation=https://github.com/kubernetes/kubernetes
@@ -112,21 +112,21 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --client-ca-file=/var/lib/kubernetes/ca.pem \\
   --enable-admission-plugins=NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \\
   --etcd-cafile=/var/lib/kubernetes/ca.pem \\
-  --etcd-certfile=/var/lib/kubernetes/kubernetes.pem \\
-  --etcd-keyfile=/var/lib/kubernetes/kubernetes-key.pem \\
+  --etcd-certfile=/var/lib/kubernetes/kube-apiserver.pem \\
+  --etcd-keyfile=/var/lib/kubernetes/kube-apiserver-key.pem \\
   --etcd-servers=${API_SERVER_SVC_ETCD_CLUSTER_STRING::-1} \\
   --event-ttl=1h \\
   --encryption-provider-config=/var/lib/kubernetes/encryption-config.yaml \\
   --kubelet-certificate-authority=/var/lib/kubernetes/ca.pem \\
-  --kubelet-client-certificate=/var/lib/kubernetes/kubernetes.pem \\
-  --kubelet-client-key=/var/lib/kubernetes/kubernetes-key.pem \\
+  --kubelet-client-certificate=/var/lib/kubernetes/kube-apiserver.pem \\
+  --kubelet-client-key=/var/lib/kubernetes/kube-apiserver-key.pem \\
   --kubelet-https=true \\
   --runtime-config='api/all=true' \\
   --service-account-key-file=/var/lib/kubernetes/service-account.pem \\
   --service-cluster-ip-range=10.32.0.0/16 \\
   --service-node-port-range=30000-32767 \\
-  --tls-cert-file=/var/lib/kubernetes/kubernetes.pem \\
-  --tls-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \\
+  --tls-cert-file=/var/lib/kubernetes/kube-apiserver.pem \\
+  --tls-private-key-file=/var/lib/kubernetes/kube-apiserver-key.pem \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -184,7 +184,7 @@ Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
 ExecStart=/usr/local/bin/kube-scheduler \\
-  --config=/etc/kubernetes/config/kube-scheduler.yaml \\
+  --config=/var/lib/kubernetes/kube-scheduler.yaml \\
   --v=2
 Restart=on-failure
 RestartSec=5

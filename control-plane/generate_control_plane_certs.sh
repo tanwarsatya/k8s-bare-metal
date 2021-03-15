@@ -15,16 +15,6 @@ echo "1. Generating admin client cert"
 # create output directory
 sudo mkdir -p output
 
-# get public ip address for control plane nodes
-# Get nodes list from the file
-mapfile -t NODE_HOSTNAMES < control-plane-nodes.txt
-#declare a node-ips array
-
-
-
-
-
-
 cfssl gencert \
   -ca=../cert-authority/certs/ca.pem \
   -ca-key=../cert-authority/certs/ca-key.pem \
@@ -77,7 +67,7 @@ cfssl gencert \
   -config=../cert-authority/config/ca-config.json \
   -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${CONTROL_PLANE_NODE_IPS_STRING} \
   -profile=default \
-  config/kube-apiserver-csr.json | cfssljson -bare output/kub-apiserver
+  config/kube-apiserver-csr.json | cfssljson -bare output/kube-apiserver
 
 
 
