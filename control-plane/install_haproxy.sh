@@ -11,14 +11,15 @@ echo "Install HA Proxy as loadbalancer for api server "
 echo "--------------------------------"
 if [ "LOAD_BALANCER_NODE_IP" != "" ]; then
 
-echo "--------------------------------"
-echo "0. disable ha proxy  "
-echo "--------------------------------"
+#copy the k8s-bare-metal folder
+echo "sync the k8s_bare_metal folder to the node"
+sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $CONTROL_PLANE_SSH_CERT" ../../k8s-bare-metal $CONTROL_PLANE_SSH_USER@$CONTROL_PLANE_API_LOAD_BALANCER_NODE:/home/$CONTROL_PLANE_SSH_USER
 
 
 echo "executing remote shell commands"
     
 ssh -i $CONTROL_PLANE_SSH_CERT -o StrictHostKeyChecking=no $CONTROL_PLANE_SSH_USER@$CONTROL_PLANE_API_LOAD_BALANCER_NODE /bin/bash << EOF 
+
 
 
 echo "Stop and disable ha proxy.."
