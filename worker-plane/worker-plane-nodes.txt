@@ -1,3 +1,0 @@
-k8s-worker-a-1
-k8s-worker-a-2
-k8s-worker-a-3
