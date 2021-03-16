@@ -2,7 +2,7 @@
 source variables.sh
 
 echo "k8s-bare-metal"
-echo "control plane installation"
+echo "worker plane installation"
 
 #generate root cert if not available 
 CA_PEM_FILE=cert-authority/certs/ca.pem
@@ -17,22 +17,16 @@ cfssl gencert -initca cert-authority/config/ca-csr.json | cfssljson -bare cert-a
 fi
 
 # Generate control plane certs
-sudo bash control-plane/generate_control_plane_certs.sh
+sudo bash worker-plane/generate_worker_plane_certs.sh
 
 # Generate config files
-sudo bash control-plane/generate_control_plane_configs.sh
+sudo bash worker-plane/generate_worker_plane_configs.sh
 
 # generate service files
-sudo bash control-plane/generate_control_plane_services.sh
+sudo bash worker-plane/generate_worker_plane_services.sh
 
 
-# Install Etcd
-#sudo bash control-plane/install_etcd.sh
-
-# Install HaProxy
-#sudo bash control-plane/install_haproxy.sh
-
-# Install K8s control plane components
-#sudo bash control-plane/install_k8s.sh
+# Install K8s worker plane components
+#sudo bash worker-plane/install_k8s.sh
 
 

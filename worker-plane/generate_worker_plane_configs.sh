@@ -1,99 +1,105 @@
 #!/bin/sh
-echo "k8s-bare-metal"
-echo "--------------------------------"
+# ******************************************************************************************************
 echo "worker plane - generate configuration files"
-echo "--------------------------------"
-echo "1. Generating kube-proxy.kubeconfig"
-echo "--------------------------------"
+
+
+FILE=../variables.sh && test -f $FILE && source $FILE
+FILE=variables.sh && test -f $FILE && source $FILE
 
 # create output directory
-sudo mkdir -p output
+sudo mkdir -p worker-plane/output
 
-# KUBE_MASTER_LB using HA PROXY
-KUBE_MASTER_LB = "k8s-master-lb"
-KUBE_API_MASTER_LB_IP_ADDRESS = $(host $KUBE_MASTER_LB | grep -oP "192.168.*.*")
 
+# ________________________________________________________________________________________________________
+echo "1. Generating kube-proxy.kubeconfig and kube-proxy-config.yaml"
+# generate kube-proxy.kubeconfig 
+# ----------------------------------------
+
+LOAD_BALANCER_IP=( $(host ${CONTROL_PLANE_API_LOAD_BALANCER_NODE} | grep -oP "192.168.*.*") )
+echo "Load Balancer - $CONTROL_PLANE_API_LOAD_BALANCER_NODE ip is $LOAD_BALANCER_IP"
 {
-  kubectl config set-cluster kubernetes-the-hard-way \
-    --certificate-authority=ca.pem \
+  kubectl config set-cluster ${CLUSTER_NAME} \
+    --certificate-authority=cert-authority/certs/ca.pem \
     --embed-certs=true \
-    --server=https://${KUBE_API_MASTER_LB_IP_ADDRESS}:6443 \
-    --kubeconfig=kube-proxy.kubeconfig
+    --server=https://${LOAD_BALANCER_API}:6443 \
+    --kubeconfig=worker-plane/output/kube-proxy.kubeconfig
 
   kubectl config set-credentials system:kube-proxy \
-    --client-certificate=kube-proxy.pem \
-    --client-key=kube-proxy-key.pem \
+    --client-certificate=worker-plane/output/kube-proxy.pem \
+    --client-key=worker-plane/output/kube-proxy-key.pem \
     --embed-certs=true \
-    --kubeconfig=kube-proxy.kubeconfig
+    --kubeconfig=worker-plane/output/kube-proxy.kubeconfig
 
   kubectl config set-context default \
     --cluster=kubernetes-the-hard-way \
     --user=system:kube-proxy \
-    --kubeconfig=kube-proxy.kubeconfig
+    --kubeconfig=worker-plane/output/kube-proxy.kubeconfig
 
-  kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
+  kubectl config use-context default --kubeconfig=worker-plane/output/kube-proxy.kubeconfig
 }
-echo "**********************************"
-echo "2. Generating kube-scheduler.kubeconfig"
-echo "--------------------------------"
-{
-  kubectl config set-cluster k8s-bare-metal \
-    --certificate-authority=../cert-authority/certs/ca.pem \
-    --embed-certs=true \
-    --server=https://127.0.0.1:6443 \
-    --kubeconfig=config/kube-scheduler.kubeconfig
 
-  kubectl config set-credentials system:kube-controller-manager \
-    --client-certificate=certs/kube-scheduler.pem \
-    --client-key=certs/kube-scheduler-key.pem \
-    --embed-certs=true \
-    --kubeconfig=config/kube-scheduler.kubeconfig
-
-  kubectl config set-context default \
-    --cluster=k8s-bare-metal \
-    --user=system:kube-scheduler \
-    --kubeconfig=config/kube-scheduler.kubeconfig
-
-  kubectl config use-context default --kubeconfig=config/kube-scheduler.kubeconfig
-}
-echo "**********************************"
-echo "3. Generating admin.kubeconfig"
-echo "--------------------------------"
-{
-  kubectl config set-cluster k8s-bare-metal \
-    --certificate-authority=../cert-authority/certs/ca.pem \
-    --embed-certs=true \
-    --server=https://127.0.0.1:6443 \
-    --kubeconfig=config/admin.kubeconfig
-
-  kubectl config set-credentials system:kube-controller-manager \
-    --client-certificate=certs/admin.pem \
-    --client-key=certs/admin-key.pem \
-    --embed-certs=true \
-    --kubeconfig=config/admin.kubeconfig
-
-  kubectl config set-context default \
-    --cluster=k8s-bare-metal \
-    --user=admin \
-    --kubeconfig=config/admin.kubeconfig
-
-  kubectl config use-context default --kubeconfig=config/admin.kubeconfig
-}
-echo "**********************************"
-echo "4. Generating encryption-config.yaml"
-echo "--------------------------------"
-ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
-cat > config/encryption-config.yaml <<EOF
-kind: EncryptionConfig
-apiVersion: v1
-resources:
-  - resources:
-      - secrets
-    providers:
-      - aescbc:
-          keys:
-            - name: key1
-              secret: ${ENCRYPTION_KEY}
-      - identity: {}
+# generate kube-proxy-config.yaml 
+# ----------------------------------------
+cat > worker-plane/output/kube-proxy-config.yaml <<EOF 
+kind: KubeProxyConfiguration
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+clientConnection:
+  kubeconfig: "/var/lib/kube-proxy/kubeconfig"
+mode: "iptables"
+clusterCIDR: "${CLUSTER_CIDR}"
 EOF
-echo "**********************************"
+
+# _____________________________________________________________________________________________________________
+
+
+# _____________________________________________________________________________________________________________
+echo "2. Generating bootstrap-kubeconfig"
+
+LOAD_BALANCER_IP=( $(host ${CONTROL_PLANE_API_LOAD_BALANCER_NODE} | grep -oP "192.168.*.*") )
+
+cat > worker-plane/output/bootstrap-kubeconfig <<EOF 
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /var/lib/kubernetes/ca.crt
+    server: https://$LOAD_BALANCER_IP:6443
+  name: bootstrap
+contexts:
+- context:
+    cluster: bootstrap
+    user: kubelet-bootstrap
+  name: bootstrap
+current-context: bootstrap
+kind: Config
+preferences: {}
+users:
+- name: kubelet-bootstrap
+  user:
+    token: $CERT_AUTH_BOOTSTRAP_TOKEN_ID.$CERT_AUTH_BOOTSTRAP_TOKEN_SECRET
+EOF
+
+# ______________________________________________________________________________________________________________
+
+# ______________________________________________________________________________________________________________
+echo "3. Generating kubelet-config.yaml"
+
+cat > worker-plane/output/kubelet-config.yaml <<EOF 
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    enabled: true
+  x509:
+    clientCAFile: "/var/lib/kubernetes/ca.crt"
+authorization:
+  mode: Webhook
+clusterDomain: "cluster.local"
+clusterDNS:
+  - "10.96.0.10"
+resolvConf: "/run/systemd/resolve/resolv.conf"
+runtimeRequestTimeout: "15m"
+EOF
+# ________________________________________________________________________________________________________________
+# ****************************************************************************************************************
