@@ -1,8 +1,6 @@
 #!/bin/sh
-
-
-# import vairables
-source variables.sh
+FILE=../variables.sh && test -f $FILE && source $FILE
+FILE=variables.sh && test -f $FILE && source $FILE
 
 
 echo "k8s-bare-metal"
@@ -12,54 +10,54 @@ echo "--------------------------------"
 echo "1. Generating kube-controller-manager.kubeconfig"
 echo "--------------------------------"
 
-# create output directory
-sudo mkdir -p output
+# create control-plane/output directory
+sudo mkdir -p control-plane/output
 
 {
   kubectl config set-cluster k8s-bare-metal \
-    --certificate-authority=../cert-authority/certs/ca.pem \
+    --certificate-authority=cert-authority/certs/ca.pem \
     --embed-certs=true \
     --server=https://127.0.0.1:6443 \
-    --kubeconfig=output/kube-controller-manager.kubeconfig
+    --kubeconfig=control-plane/output/kube-controller-manager.kubeconfig
 
   kubectl config set-credentials system:kube-controller-manager \
-    --client-certificate=output/kube-controller-manager.pem \
-    --client-key=output/kube-controller-manager-key.pem \
+    --client-certificate=control-plane/output/kube-controller-manager.pem \
+    --client-key=control-plane/output/kube-controller-manager-key.pem \
     --embed-certs=true \
-    --kubeconfig=output/kube-controller-manager.kubeconfig
+    --kubeconfig=control-plane/output/kube-controller-manager.kubeconfig
 
   kubectl config set-context default \
     --cluster=k8s-bare-metal \
     --user=system:kube-controller-manager \
-    --kubeconfig=output/kube-controller-manager.kubeconfig
+    --kubeconfig=control-plane/output/kube-controller-manager.kubeconfig
 
-  kubectl config use-context default --kubeconfig=output/kube-controller-manager.kubeconfig
+  kubectl config use-context default --kubeconfig=control-plane/output/kube-controller-manager.kubeconfig
 }
 echo "**********************************"
 echo "2. Generating kube-scheduler.kubeconfig and kube-scheduler.yaml"
 echo "--------------------------------"
 {
   kubectl config set-cluster k8s-bare-metal \
-    --certificate-authority=../cert-authority/certs/ca.pem \
+    --certificate-authority=cert-authority/certs/ca.pem \
     --embed-certs=true \
     --server=https://127.0.0.1:6443 \
-    --kubeconfig=output/kube-scheduler.kubeconfig
+    --kubeconfig=control-plane/output/kube-scheduler.kubeconfig
 
   kubectl config set-credentials system:kube-controller-manager \
-    --client-certificate=output/kube-scheduler.pem \
-    --client-key=output/kube-scheduler-key.pem \
+    --client-certificate=control-plane/output/kube-scheduler.pem \
+    --client-key=control-plane/output/kube-scheduler-key.pem \
     --embed-certs=true \
-    --kubeconfig=output/kube-scheduler.kubeconfig
+    --kubeconfig=control-plane/output/kube-scheduler.kubeconfig
 
   kubectl config set-context default \
     --cluster=k8s-bare-metal \
     --user=system:kube-scheduler \
-    --kubeconfig=output/kube-scheduler.kubeconfig
+    --kubeconfig=control-plane/output/kube-scheduler.kubeconfig
 
-  kubectl config use-context default --kubeconfig=output/kube-scheduler.kubeconfig
+  kubectl config use-context default --kubeconfig=control-plane/output/kube-scheduler.kubeconfig
 }
 
-cat > output/kube-scheduler.yaml <<EOF 
+cat > control-plane/output/kube-scheduler.yaml <<EOF 
 apiVersion: kubescheduler.config.k8s.io/v1alpha1
 kind: KubeSchedulerConfiguration
 clientConnection:
@@ -73,29 +71,29 @@ echo "3. Generating admin.kubeconfig"
 echo "--------------------------------"
 {
   kubectl config set-cluster k8s-bare-metal \
-    --certificate-authority=../cert-authority/certs/ca.pem \
+    --certificate-authority=cert-authority/certs/ca.pem \
     --embed-certs=true \
     --server=https://127.0.0.1:6443 \
-    --kubeconfig=output/admin.kubeconfig
+    --kubeconfig=control-plane/output/admin.kubeconfig
 
   kubectl config set-credentials system:kube-controller-manager \
-    --client-certificate=output/admin.pem \
-    --client-key=output/admin-key.pem \
+    --client-certificate=control-plane/output/admin.pem \
+    --client-key=control-plane/output/admin-key.pem \
     --embed-certs=true \
-    --kubeconfig=output/admin.kubeconfig
+    --kubeconfig=control-plane/output/admin.kubeconfig
 
   kubectl config set-context default \
     --cluster=k8s-bare-metal \
     --user=admin \
-    --kubeconfig=output/admin.kubeconfig
+    --kubeconfig=control-plane/output/admin.kubeconfig
 
-  kubectl config use-context default --kubeconfig=output/admin.kubeconfig
+  kubectl config use-context default --kubeconfig=control-plane/output/admin.kubeconfig
 }
 echo "**********************************"
 echo "4. Generating encryption-config.yaml"
 echo "--------------------------------"
 ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
-cat > output/encryption-config.yaml <<EOF
+cat > control-plane/output/encryption-config.yaml <<EOF
 kind: EncryptionConfig
 apiVersion: v1
 resources:
@@ -135,5 +133,5 @@ backend kubernetes-master-nodes
     ${API_SERVER_STRING:2}
 EOF
 )
-printf "${PROXY_CONFIG}" > output/haproxy.cfg
+printf "${PROXY_CONFIG}" > control-plane/output/haproxy.cfg
 echo "**********************************"

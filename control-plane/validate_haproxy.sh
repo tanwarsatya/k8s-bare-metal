@@ -1,7 +1,9 @@
 #!/bin/sh
 
+#!/bin/sh
+mydir="${0%/*}"
 # import vairables
-source variables.sh
+source "$mydir"/variables.sh
 
 #echo "3. Validate ha proxy forwarding request"
 

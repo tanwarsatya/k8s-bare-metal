@@ -1,7 +1,7 @@
 #!/bin/sh
-
 # import vairables
-source variables.sh
+FILE=../variables.sh && test -f $FILE && source $FILE
+FILE=variables.sh && test -f $FILE && source $FILE
 
 
 echo "k8s-bare-metal"
@@ -16,31 +16,31 @@ echo "1. Generating admin client cert"
 sudo mkdir -p output
 
 cfssl gencert \
-  -ca=../cert-authority/certs/ca.pem \
-  -ca-key=../cert-authority/certs/ca-key.pem \
-  -config=../cert-authority/config/ca-config.json \
+  -ca=cert-authority/certs/ca.pem \
+  -ca-key=cert-authority/certs/ca-key.pem \
+  -config=cert-authority/config/ca-config.json \
   -profile=default \
-   config/admin-csr.json | cfssljson -bare output/admin
+   control-plane/config/admin-csr.json | cfssljson -bare control-plane/output/admin
 
 
 echo "2. Generating kube-controller-manager cert"
 
 cfssl gencert \
-  -ca=../cert-authority/certs/ca.pem \
-  -ca-key=../cert-authority/certs/ca-key.pem \
-  -config=../cert-authority/config/ca-config.json \
+  -ca=cert-authority/certs/ca.pem \
+  -ca-key=cert-authority/certs/ca-key.pem \
+  -config=cert-authority/config/ca-config.json \
   -profile=default \
-  config/kube-controller-manager-csr.json | cfssljson -bare output/kube-controller-manager
+  control-plane/config/kube-controller-manager-csr.json | cfssljson -bare control-plane/output/kube-controller-manager
 
 
 echo "3. Generating kube-scheduler cert "
 
 cfssl gencert \
-  -ca=../cert-authority/certs/ca.pem \
-  -ca-key=../cert-authority/certs/ca-key.pem \
-  -config=../cert-authority/config/ca-config.json \
+  -ca=cert-authority/certs/ca.pem \
+  -ca-key=cert-authority/certs/ca-key.pem \
+  -config=cert-authority/config/ca-config.json \
   -profile=default \
-  config/kube-scheduler-csr.json | cfssljson -bare output/kube-scheduler
+  control-plane/config/kube-scheduler-csr.json | cfssljson -bare control-plane/output/kube-scheduler
 
 
 
@@ -62,12 +62,12 @@ CONTROL_PLANE_NODE_IPS_STRING=$(IFS=,; echo "${CONTROL_PLANE_NODE_IPS[*]}")
 KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local
 
 cfssl gencert \
- -ca=../cert-authority/certs/ca.pem \
-  -ca-key=../cert-authority/certs/ca-key.pem \
-  -config=../cert-authority/config/ca-config.json \
+ -ca=cert-authority/certs/ca.pem \
+  -ca-key=cert-authority/certs/ca-key.pem \
+  -config=cert-authority/config/ca-config.json \
   -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${CONTROL_PLANE_NODE_IPS_STRING} \
   -profile=default \
-  config/kube-apiserver-csr.json | cfssljson -bare output/kube-apiserver
+  control-plane/config/kube-apiserver-csr.json | cfssljson -bare control-plane/output/kube-apiserver
 
 
 
@@ -90,12 +90,12 @@ ETCD_NODE_IPS_STRING=$(IFS=,; echo "${ETCD_NODE_IPS[*]}")
 KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local
 
 cfssl gencert \
- -ca=../cert-authority/certs/ca.pem \
-  -ca-key=../cert-authority/certs/ca-key.pem \
-  -config=../cert-authority/config/ca-config.json \
+ -ca=cert-authority/certs/ca.pem \
+  -ca-key=cert-authority/certs/ca-key.pem \
+  -config=cert-authority/config/ca-config.json \
   -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${ETCD_NODE_IPS_STRING} \
   -profile=default \
-  config/etcd-csr.json | cfssljson -bare output/etcd
+  control-plane/config/etcd-csr.json | cfssljson -bare control-plane/output/etcd
 
 
 
@@ -103,8 +103,8 @@ cfssl gencert \
 echo "5. Generating service-account cert -----------------------------"
 
 cfssl gencert \
-  -ca=../cert-authority/certs/ca.pem \
-  -ca-key=../cert-authority/certs/ca-key.pem \
-  -config=../cert-authority/config/ca-config.json \
+  -ca=cert-authority/certs/ca.pem \
+  -ca-key=cert-authority/certs/ca-key.pem \
+  -config=cert-authority/config/ca-config.json \
   -profile=default \
-  config/service-account-csr.json | cfssljson -bare output/service-account
+  control-plane/config/service-account-csr.json | cfssljson -bare control-plane/output/service-account

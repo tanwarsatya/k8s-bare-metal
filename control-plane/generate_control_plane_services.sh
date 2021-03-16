@@ -1,15 +1,15 @@
-#!/bin/sh
 
-# import vairables
-source variables.sh
+#!/bin/sh
+FILE=../variables.sh && test -f $FILE && source $FILE
+FILE=variables.sh && test -f $FILE && source $FILE
 
 
 echo "k8s-bare-metal"
 echo "--------------------------------"
 echo "control plane - generate service files"
 
-# create output directory
-sudo mkdir -p output
+# create control-plane/output directory
+sudo mkdir -p control-plane/output
 
 # Prep Steps
 #------------------------------------------------------------------------------------
@@ -45,7 +45,7 @@ do
 
 if [ "$ETCD_IP" != "" ]; then
    
-    cat > output/${FILE_NAME}  <<EOF 
+    cat > control-plane/output/${FILE_NAME}  <<EOF 
     [Unit]
     Description=etcd
     Documentation=https://github.com/coreos
@@ -93,7 +93,7 @@ do
     NODE_IP=( $(host $i | grep -oP "192.168.*.*")  )
 
 if [ "$NODE_IP" != "" ]; then
-cat > output/${FILE_NAME}  <<EOF 
+cat > control-plane/output/${FILE_NAME}  <<EOF 
 [Unit]
 Description=Kubernetes API Server
 Documentation=https://github.com/kubernetes/kubernetes
@@ -144,7 +144,7 @@ echo "********************************"
 echo "3. Generating kube-controller-manager.service "
 echo "--------------------------------"
 
-cat > output/kube-controller-manager.service  <<EOF 
+cat > control-plane/output/kube-controller-manager.service  <<EOF 
 [Unit]
 Description=Kubernetes Controller Manager
 Documentation=https://github.com/kubernetes/kubernetes
@@ -177,7 +177,7 @@ echo "--------------------------------"
 
 
 
-cat > output/kube-scheduler.service <<EOF 
+cat > control-plane/output/kube-scheduler.service <<EOF 
 [Unit]
 Description=Kubernetes Scheduler
 Documentation=https://github.com/kubernetes/kubernetes

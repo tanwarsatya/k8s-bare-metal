@@ -1,7 +1,6 @@
 #!/bin/sh
-
-# import vairables
-source variables.sh
+FILE=../variables.sh && test -f $FILE && source $FILE
+FILE=variables.sh && test -f $FILE && source $FILE
 
 echo "--------------------------------"
 echo "Install k8sd services remotely on all master nodes"
@@ -20,11 +19,11 @@ do
     echo "________________________________________________________"
     
     echo "sync the k8s-bare-metal folder to the node"
-    sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $CONTROL_PLANE_SSH_CERT" ../../k8s-bare-metal $CONTROL_PLANE_SSH_USER@$NODE_NAME:/home/$CONTROL_PLANE_SSH_USER
+    sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $CONTROL_PLANE_SSH_CERT" ../k8s-bare-metal $CONTROL_PLANE_SSH_USER@$NODE_NAME:/home/$CONTROL_PLANE_SSH_USER
 
     echo "executing remote shell commands"
     echo "#######################################################################################################"
-    ssh -i $CONTROL_PLANE_SSH_CERT -o StrictHostKeyChecking=no $CONTROL_PLANE_SSH_USER@$NODE_NAME /bin/bash << EOF 
+    ssh -t -i $CONTROL_PLANE_SSH_CERT -o StrictHostKeyChecking=no $CONTROL_PLANE_SSH_USER@$NODE_NAME /bin/bash << EOF 
     
      # Disale existing services
      echo "stop and disable kube-apiserver, kube-controller-manager, kube-scheduler service";
@@ -39,7 +38,7 @@ do
       sudo chmod 700 /var/lib/kubernetes; 
    
      #download k8s binaries
-     echo "download k8s - ${CONTROL_PLANE_K8S_VERSION} binaies" 
+     echo "download k8s - ${CONTROL_PLANE_K8S_VERSION} binaries" 
      wget -q --https-only --timestamping -P /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/binaries \
       "https://storage.googleapis.com/kubernetes-release/release/${CONTROL_PLANE_K8S_VERSION}/bin/linux/amd64/kube-apiserver" \
       "https://storage.googleapis.com/kubernetes-release/release/${CONTROL_PLANE_K8S_VERSION}/bin/linux/amd64/kube-controller-manager" \
@@ -79,28 +78,13 @@ do
       sudo systemctl enable kube-apiserver kube-controller-manager kube-scheduler 
       sudo systemctl start kube-apiserver kube-controller-manager kube-scheduler 
 
-    # Add the cluster role and role binding
-
-      echo "wait 30 seconds before applying rbac role and bindings"
-       #sudo sleep 5 
-       sudo kubectl apply --kubeconfig  /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/admin.kubeconfig \
-                          -f /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/config/kube-apiserver-clusterrole.yaml
-
-       sudo kubectl apply --kubeconfig  /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/admin.kubeconfig \
-                          -f /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/config/kube-apiserver-clusterrole-binding.yaml
-                          
-                                                                    
+    #                                                             
      
-
-
-
-
-
 
      # Install the http health checkpoint based on ngnix
        echo "installing nginx based health checkpoint" 
-       sudo apt-get update
-       sudo apt-get install -y nginx
+        sudo apt-get update && sudo apt-get install -y nginx
+        
        
        
        echo "copy kubernetes.default.svc.cluster.local to /etc/nginx/sites-available"
@@ -110,6 +94,15 @@ do
 
        sudo systemctl restart nginx
        sudo systemctl enable nginx 
+
+
+      #Add the cluster role and role binding
+
+      echo "sleep 10 sec before applying rbac role and bindings"
+      sudo sleep 10 
+      sudo kubectl apply -f /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/config/kube-apiserver-clusterrole.yaml                 
+      sudo kubectl apply -f /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/config/kube-apiserver-clusterrole-binding.yaml
+       
     
    echo "#######################################################################################################"
 EOF

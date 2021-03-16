@@ -1,7 +1,6 @@
 #!/bin/sh
-
-# import vairables
-source variables.sh
+FILE=../variables.sh && test -f $FILE && source $FILE
+FILE=variables.sh && test -f $FILE && source $FILE
 
 
  LOAD_BALANCER_NODE_IP=( $(host $CONTROL_PLANE_API_LOAD_BALANCER_NODE | grep -oP "192.168.*.*")  )
@@ -13,7 +12,7 @@ if [ "LOAD_BALANCER_NODE_IP" != "" ]; then
 
 #copy the k8s-bare-metal folder
 echo "sync the k8s_bare_metal folder to the node"
-sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $CONTROL_PLANE_SSH_CERT" ../../k8s-bare-metal $CONTROL_PLANE_SSH_USER@$CONTROL_PLANE_API_LOAD_BALANCER_NODE:/home/$CONTROL_PLANE_SSH_USER
+sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $CONTROL_PLANE_SSH_CERT" ../k8s-bare-metal $CONTROL_PLANE_SSH_USER@$CONTROL_PLANE_API_LOAD_BALANCER_NODE:/home/$CONTROL_PLANE_SSH_USER
 
 
 echo "executing remote shell commands"
