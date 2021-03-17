@@ -3,7 +3,7 @@ FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
 
 echo "--------------------------------"
-echo "Install k8sd services remotely on all worker nodes"
+echo "Install k8s services remotely on all worker nodes"
 echo "--------------------------------"
 
 

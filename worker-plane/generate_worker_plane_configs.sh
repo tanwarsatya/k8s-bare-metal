@@ -141,7 +141,7 @@ EOF
 
 if [ "$CLUSTER_TLS_BOOTSTRAPING" = false ] ; then
 echo "TLS bootstrapping is set to false for worker"
-echo "1. Generating kubelet.kubeconfig for nodes"
+echo "4. Generating kubelet.kubeconfig for nodes"
 
 # generate csr json files for worker nodes
 for i in "${WORKER_PLANE_NODES[@]}"
@@ -173,5 +173,28 @@ echo "generating csr json file for $i node"
 done
 
 fi
+
+# ______________________________________________________________________________________________________________
+echo "5. Generating 10-bridge.conf"
+
+cat > worker-plane/output/kubelet-config.yaml <<EOF 
+{
+    "cniVersion": "0.3.1",
+    "name": "bridge",
+    "type": "bridge",
+    "bridge": "cnio0",
+    "isGateway": true,
+    "ipMasq": true,
+    "ipam": {
+        "type": "host-local",
+        "ranges": [
+          [{"subnet": "${POD_CIDR}"}]
+        ],
+        "routes": [{"dst": "0.0.0.0/0"}]
+    }
+}
+EOF
+# ________________________________________________________________________________________________________________
+
 
 # ****************************************************************************************************************
