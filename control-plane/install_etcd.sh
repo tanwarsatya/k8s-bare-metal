@@ -20,26 +20,18 @@ do
 
 
     echo "sync the k8s_bare_metal folder to the node"
-    sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $CONTROL_PLANE_SSH_CERT" ../k8s-bare-metal $CONTROL_PLANE_SSH_USER@$NODE_NAME:/home/$CONTROL_PLANE_SSH_USER
+    sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal $SSH_USER@$NODE_NAME:/home/$SSH_USER
 
     echo "executing remote shell commands"
     echo "#######################################################################################################"
-    ssh -i $CONTROL_PLANE_SSH_CERT -o StrictHostKeyChecking=no $CONTROL_PLANE_SSH_USER@$NODE_NAME /bin/bash << EOF 
-    
-   
-
-
-    # echo "download the
-    # sudo mkdir -p /home/$CONTROL_PLANE_SSH_USER/k8s_bare_metal
-    # sudo chmod -R 777 /home/$CONTROL_PLANE_SSH_USER/k8s_bare_metal; 
-    # sudo mkdir -p /home/$CONTROL_PLANE_SSH_USER/k8s_bare_metal
-
+    ssh -i $SSH_CERT -o StrictHostKeyChecking=no $SSH_USER@$NODE_NAME /bin/bash << EOF 
+      
     # download etcd binaries
      echo "download etcd - ${CONTROL_PLANE_ETCD_VERSION} binaies" 
-     wget -q --https-only --timestamping -P /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-panel/binaries \
+     wget -q --https-only --timestamping -P /home/$SSH_USER/k8s-bare-metal/control-plane/binaries \
        "https://github.com/etcd-io/etcd/releases/download/${CONTROL_PLANE_ETCD_VERSION}/etcd-${CONTROL_PLANE_ETCD_VERSION}-linux-amd64.tar.gz"
 
-     sudo tar -C /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-panel/binaries -xvf /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-panel/binaries/etcd-${CONTROL_PLANE_ETCD_VERSION}-linux-amd64.tar.gz
+     sudo tar -C /home/$SSH_USER/k8s-bare-metal/control-plane/binaries -xvf /home/$SSH_USER/k8s-bare-metal/control-plane/binaries/etcd-${CONTROL_PLANE_ETCD_VERSION}-linux-amd64.tar.gz
 
     # Disale existing services
      echo "stop and disable etcd service";

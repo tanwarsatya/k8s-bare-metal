@@ -17,22 +17,22 @@ cfssl gencert -initca cert-authority/config/ca-csr.json | cfssljson -bare cert-a
 fi
 
 # Generate control plane certs
-sudo bash control-plane/generate_control_plane_certs.sh
+#sudo bash control-plane/generate_control_plane_certs.sh
 
 # Generate config files
-sudo bash control-plane/generate_control_plane_configs.sh
+#sudo bash control-plane/generate_control_plane_configs.sh
 
 # generate service files
-sudo bash control-plane/generate_control_plane_services.sh
+#sudo bash control-plane/generate_control_plane_services.sh
 
 
 # Install Etcd
-#sudo bash control-plane/install_etcd.sh
+sudo bash control-plane/install_etcd.sh
 
 # Install HaProxy
-#sudo bash control-plane/install_haproxy.sh
+sudo bash control-plane/install_haproxy.sh
 
 # Install K8s control plane components
-#sudo bash control-plane/install_k8s.sh
+sudo bash control-plane/install_k8s.sh
 
 

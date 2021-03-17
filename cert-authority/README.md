@@ -1,1 +1,1 @@
-This folder contains script to generate cert authority , admin and any other common token, cert etc.
+This folder contains script to generate cert authority and common bootstrap token used for TLS boot straping, admin and any other common token, cert etc.

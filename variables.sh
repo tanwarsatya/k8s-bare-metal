@@ -5,8 +5,14 @@
 # ***************************************************************************
 # Cluster Name
 CLUSTER_NAME="k8s-bare-metal"
+# Cluster Version
+CLUSTER_VERSION="v1.18.6"
 # Cluster cidr
 CLUSTER_CIDR="10.200.0.0/16"
+# Cluster TLS BOOT STRAPPING ALLOWED FOR WORKER NODES
+CLUSTER_TLS_BOOTSTRAPING=false
+# cluster api load balancer
+CLUSTER_API_LOAD_BALANCER="k8s-master-lb"
 # SSH user name and cert file
 SSH_USER="stanwar"
 SSH_CERT="/home/stanwar/.ssh/id_rsa"
@@ -39,5 +45,11 @@ declare -a CONTROL_PLANE_ETCD_NODES=("k8s-master-1" "k8s-master-2" "k8s-master-3
 # ***************************************************************************
 # worker plane variables
 # ***************************************************************************
-WORKER_PLANE_TLS_BOOTSTRAPING=false
-declare -a WORKER_PLANE_NODES=("k8s-worker-1" "k8s-worker-2" "k8s-worker-3")
+#WORKER_PLANE_TLS_BOOTSTRAPING=false
+WORKER_PLANE_CONTAINERD_VERSION="v1.3.6"
+WORKER_PLANE_RUNC_VERSION="v1.0.0-rc91"
+WORKER_PLANE_CNI_PLUGIN_VERSION="v0.8.6"
+WORKER_PLANE_CRI_TOOLS_VERSION="v1.18.0"
+
+#declare -a WORKER_PLANE_NODES=("k8s-worker-1" "k8s-worker-2" "k8s-worker-3")
+declare -a WORKER_PLANE_NODES=("k8s-worker-1")

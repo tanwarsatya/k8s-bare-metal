@@ -1,6 +1,6 @@
 #!/bin/sh
 # ******************************************************************************************************
-echo "worker plane - generate configuration files"
+echo "worker plane - generate cert files"
 
 
 FILE=../variables.sh && test -f $FILE && source $FILE
@@ -21,16 +21,11 @@ cfssl gencert \
 # ________________________________________________________________________________________________________________
 
 # ________________________________________________________________________________________________________________
-if [ "$WORKER_PLANE_TLS_BOOTSTRAPING" = false ] ; then
-
+if [ "$CLUSTER_TLS_BOOTSTRAPING" = false ] ; then
+echo "TLS bootstrapping is set to false for worker"
 echo "1. Generating kubelet cert"
 
-
-
-
-#_____________________________________________________
 # generate csr json files for worker nodes
-
 for i in "${WORKER_PLANE_NODES[@]}"
 do
 echo "generating csr json file for $i node"  
@@ -55,24 +50,25 @@ cat > worker-plane/output/${i}-csr.json <<EOF
   ]
 }
 EOF
+done
+
+# generate cert files for worker nodes
+for i in "${WORKER_PLANE_NODES[@]}"
+do
+echo "generating cert and key file for $i node"  
+  NODE_IP=( "$(host $i | grep -oP "192.168.*.*")" )
+  
+cfssl gencert \
+  -ca=cert-authority/certs/ca.pem \
+  -ca-key=cert-authority/certs/ca-key.pem \
+  -config=cert-authority/config/ca-config.json \
+  -hostname=${i},${NODE_IP} \
+  -profile=default \
+  worker-plane/output/${i}-csr.json | cfssljson -bare worker-plane/output/$i
 
 done
-#________________________________________________________
 
-
-# # convert to a comma seperated IP string
-# CONTROL_PLANE_NODE_IPS=$(IFS=,; echo "{${NODE_IPS[*]}}")
-
-# #declare - a NODE_IPS 
-
-# cfssl gencert \
-#  -ca=../cert-authority/certs/ca.pem \
-#   -ca-key=../cert-authority/certs/ca-key.pem \
-#   -config=../cert-authority/config/ca-config.json \
-#   -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${CONTROL_PLANE_NODE_IPS} \
-#   -profile=default \
-#   config/kube-api-server-csr.json | cfssljson -bare output/kubernetes
-
+# ---- TLS bootstrapping check done
 fi
 
 # ________________________________________________________________________________________________________________

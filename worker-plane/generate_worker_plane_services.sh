@@ -30,10 +30,9 @@ EOF
 
 # ________________________________________________________________________________________________________________
 echo "2. Generating kubelet.service "
+if [[ "$CLUSTER_TLS_BOOTSTRAPING" = true ]] ; then
 
 cat > worker-plane/output/kubelet.service <<EOF 
-if [[ "$WORKER_PLANE_TLS_BOOTSTRAPING" = true ]] ; then
-
 
 [Unit]
 Description=Kubernetes Kubelet
@@ -58,10 +57,11 @@ RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
+EOF
 
 else 
 
-
+cat > worker-plane/output/kubelet.service <<EOF 
 [Unit]
 Description=Kubernetes Kubelet
 Documentation=https://github.com/kubernetes/kubernetes
@@ -71,11 +71,10 @@ Requires=containerd.service
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
   --config=/var/lib/kubelet/kubelet-config.yaml \\
+  --container-runtime=remote \\
+  --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
   --image-pull-progress-deadline=2m \\
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
-  --cert-dir=/var/lib/kubelet/ \\
-  --rotate-certificates=true \\
-  --rotate-server-certificates=true \\
   --network-plugin=cni \\
   --register-node=true \\
   --v=2
@@ -84,9 +83,35 @@ RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
-
+EOF
 
 fi
-EOF
+
 # ________________________________________________________________________________________________________________
+
+
+echo "3. Generating containerd.service "
+
+cat > worker-plane/output/containerd.service  <<EOF 
+[Unit]
+Description=containerd container runtime
+Documentation=https://containerd.io
+After=network.target
+
+[Service]
+ExecStartPre=/sbin/modprobe overlay
+ExecStart=/bin/containerd
+Restart=always
+RestartSec=5
+Delegate=yes
+KillMode=process
+OOMScoreAdjust=-999
+LimitNOFILE=1048576
+LimitNPROC=infinity
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
 # ****************************************************************************************************************

@@ -27,6 +27,6 @@ sudo bash worker-plane/generate_worker_plane_services.sh
 
 
 # Install K8s worker plane components
-#sudo bash worker-plane/install_k8s.sh
+sudo bash worker-plane/install_k8s.sh
 
 

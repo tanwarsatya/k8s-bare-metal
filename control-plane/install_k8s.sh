@@ -19,11 +19,11 @@ do
     echo "________________________________________________________"
     
     echo "sync the k8s-bare-metal folder to the node"
-    sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $CONTROL_PLANE_SSH_CERT" ../k8s-bare-metal $CONTROL_PLANE_SSH_USER@$NODE_NAME:/home/$CONTROL_PLANE_SSH_USER
+    sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal $SSH_USER@$NODE_NAME:/home/$SSH_USER
 
     echo "executing remote shell commands"
     echo "#######################################################################################################"
-    ssh -t -i $CONTROL_PLANE_SSH_CERT -o StrictHostKeyChecking=no $CONTROL_PLANE_SSH_USER@$NODE_NAME /bin/bash << EOF 
+    ssh -t -i $SSH_CERT -o StrictHostKeyChecking=no $SSH_USER@$NODE_NAME /bin/bash << EOF 
     
      # Disale existing services
      echo "stop and disable kube-apiserver, kube-controller-manager, kube-scheduler service";
@@ -38,39 +38,39 @@ do
       sudo chmod 700 /var/lib/kubernetes; 
    
      #download k8s binaries
-     echo "download k8s - ${CONTROL_PLANE_K8S_VERSION} binaries" 
-     wget -q --https-only --timestamping -P /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/binaries \
-      "https://storage.googleapis.com/kubernetes-release/release/${CONTROL_PLANE_K8S_VERSION}/bin/linux/amd64/kube-apiserver" \
-      "https://storage.googleapis.com/kubernetes-release/release/${CONTROL_PLANE_K8S_VERSION}/bin/linux/amd64/kube-controller-manager" \
-      "https://storage.googleapis.com/kubernetes-release/release/${CONTROL_PLANE_K8S_VERSION}/bin/linux/amd64/kube-scheduler" \
-      "https://storage.googleapis.com/kubernetes-release/release/${CONTROL_PLANE_K8S_VERSION}/bin/linux/amd64/kubectl"
+     echo "download k8s - ${CLUSTER_VERSION} binaries" 
+     wget -q --https-only --timestamping -P /home/$SSH_USER/k8s-bare-metal/control-plane/binaries \
+      "https://storage.googleapis.com/kubernetes-release/release/${CLUSTER_VERSION}/bin/linux/amd64/kube-apiserver" \
+      "https://storage.googleapis.com/kubernetes-release/release/${CLUSTER_VERSION}/bin/linux/amd64/kube-controller-manager" \
+      "https://storage.googleapis.com/kubernetes-release/release/${CLUSTER_VERSION}/bin/linux/amd64/kube-scheduler" \
+      "https://storage.googleapis.com/kubernetes-release/release/${CLUSTER_VERSION}/bin/linux/amd64/kubectl"
    
     
-      sudo chmod 755 /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/binaries/*
+      sudo chmod 755 /home/$SSH_USER/k8s-bare-metal/control-plane/binaries/*
 
       # copy binaries to /usr/local/bin
       echo "copy kube-apiserver kube-controller-manager and kube-scheduler binaries to /usr/local/bin"
-      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/binaries/kube* /usr/local/bin  
+      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/binaries/kube* /usr/local/bin  
       sudo  chmod 755 /usr/local/bin/* 
 
     # copy required certs
       echo "copy k8s certs to /var/lib/kubernetes directory"
-      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/cert-authority/certs/ca.pem \
-              /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/cert-authority/certs/ca-key.pem \
-              /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/*.pem \
+      sudo cp /home/$SSH_USER/k8s-bare-metal/cert-authority/certs/ca.pem \
+              /home/$SSH_USER/k8s-bare-metal/cert-authority/certs/ca-key.pem \
+              /home/$SSH_USER/k8s-bare-metal/control-plane/output/*.pem \
               /var/lib/kubernetes 
     # copy required config files
       echo "copy k8s configs to /var/lib/kubernetes directory"
-      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/*.kubeconfig \
-              /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/*.yaml \
+      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/output/*.kubeconfig \
+              /home/$SSH_USER/k8s-bare-metal/control-plane/output/*.yaml \
               /var/lib/kubernetes 
         
       
     # copy k8s service config files to /etc/systemd/system directory
       echo "copy service files to /etc/systemd/system"
-      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/${NODE_NAME}.kube-apiserver.service /etc/systemd/system/kube-apiserver.service
-      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/kube-scheduler.service /etc/systemd/system/kube-scheduler.service
-      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/kube-controller-manager.service /etc/systemd/system/kube-controller-manager.service
+      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/output/${NODE_NAME}.kube-apiserver.service /etc/systemd/system/kube-apiserver.service
+      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/output/kube-scheduler.service /etc/systemd/system/kube-scheduler.service
+      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/output/kube-controller-manager.service /etc/systemd/system/kube-controller-manager.service
     
     # start the service
       echo "enable and start the k8s services" 
@@ -88,7 +88,7 @@ do
        
        
        echo "copy kubernetes.default.svc.cluster.local to /etc/nginx/sites-available"
-       sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/config/kubernetes.default.svc.cluster.local /etc/nginx/sites-available/kubernetes.default.svc.cluster.local
+       sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/config/kubernetes.default.svc.cluster.local /etc/nginx/sites-available/kubernetes.default.svc.cluster.local
         
        sudo ln -sfn /etc/nginx/sites-available/kubernetes.default.svc.cluster.local /etc/nginx/sites-enabled/
 
@@ -100,9 +100,10 @@ do
 
       echo "sleep 10 sec before applying rbac role and bindings"
       sudo sleep 10 
-      sudo kubectl apply -f /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/config/kube-apiserver-clusterrole.yaml                 
-      sudo kubectl apply -f /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/config/kube-apiserver-clusterrole-binding.yaml
-       
+      sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/config/kube-apiserver-clusterrole.yaml                 
+      sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/config/kube-apiserver-clusterrole-binding.yaml
+      echo "apply tls boot straping token"
+      sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/output/bootstrap-token-${BOOTSTRAP_TOKEN_ID}.yaml
     
    echo "#######################################################################################################"
 EOF

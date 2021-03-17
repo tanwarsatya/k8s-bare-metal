@@ -3,6 +3,8 @@
 FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
 
+LOAD_BALANCER_IP=( $(host ${CLUSTER_API_LOAD_BALANCER} | grep -oP "192.168.*.*") )
+
 
 echo "k8s-bare-metal"
 echo "--------------------------------"
@@ -65,7 +67,7 @@ cfssl gencert \
  -ca=cert-authority/certs/ca.pem \
   -ca-key=cert-authority/certs/ca-key.pem \
   -config=cert-authority/config/ca-config.json \
-  -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${CONTROL_PLANE_NODE_IPS_STRING} \
+  -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${LOAD_BALANCER_IP},${CONTROL_PLANE_NODE_IPS_STRING}, \
   -profile=default \
   control-plane/config/kube-apiserver-csr.json | cfssljson -bare control-plane/output/kube-apiserver
 
