@@ -41,7 +41,7 @@ do
      sudo systemctl disable etcd 
 
     # Clean all data
-      sudo rm -rf /var/lib/etcd/default.etcd 
+      sudo rm -rf /var/lib/etcd 
     
     # Create directories for etcd
       echo "Creating etcd directories"

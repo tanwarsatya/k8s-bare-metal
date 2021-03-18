@@ -8,7 +8,9 @@ CLUSTER_NAME="k8s-bare-metal"
 # Cluster Version
 CLUSTER_VERSION="v1.18.6"
 # Cluster cidr
-CLUSTER_CIDR="10.200.0.0/16"
+CLUSTER_CIDR="10.32.0.0/12"
+# Cluster Service CIDR
+CLUSTER_SVC_CIDR="10.52.0.0/22"
 # Cluster TLS BOOT STRAPPING ALLOWED FOR WORKER NODES
 CLUSTER_TLS_BOOTSTRAPING=false
 # cluster api load balancer

@@ -38,7 +38,17 @@ do
      echo "stop and disable containerd kubelet and kube-proxy services if running";
      sudo systemctl stop kubelet kube-proxy containerd 
      sudo systemctl disable kubelet kube-proxy containerd
-
+    
+    # Removing and cleanin directories
+       sudo rm -rf  /etc/cni/net.d \
+                    /etc/containerd \
+                    /opt/cni/bin \
+                    /var/lib/kubelet \
+                    /var/lib/kube-proxy \
+                    /var/lib/kubernetes \
+                    /var/run/kubernetes
+                
+   
      #Create directories for k8s
       echo "Creating k8s directories"
       sudo mkdir -p /etc/cni/net.d \
@@ -68,7 +78,7 @@ do
      echo "unzip containerd to binaries folder and copy to correct folder"
      #---------- Containerd --------------------------
      sudo mkdir -p /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd
-     sudo tar -xvf /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd-${WORKER_PLANE_CONTAINERD_VERSION:1}-linux-amd64.tar.gz -C /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd 
+     sudo tar -xvfq /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd-${WORKER_PLANE_CONTAINERD_VERSION:1}-linux-amd64.tar.gz -C /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd 
      sudo chmod 755 /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd/bin/*
      sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd/bin/* /bin/
      

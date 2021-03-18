@@ -30,6 +30,11 @@ do
      sudo systemctl stop kube-apiserver kube-controller-manager kube-scheduler 
      sudo systemctl disable kube-apiserver kube-controller-manager kube-scheduler 
 
+     # Clean and Remove default directories
+      sudo rm -rf /etc/kubernetes/config
+      sudo rm -rf /var/lib/kubernetes/
+      
+
      #Create directories for k8s
       echo "Creating k8s directories"
       sudo mkdir -p /etc/kubernetes/config
@@ -106,6 +111,11 @@ do
       #echo "apply tls boot straping token"
       #sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/output/bootstrap-token-${BOOTSTRAP_TOKEN_ID}.yaml
     
+
+      # Add the config file for user
+      sudo cp  /home/$SSH_USER/k8s-bare-metal/control-plane/output/admin.kubeconfig /home/$SSH_USER/.kube/config
+      sudo chmod 777 /home/$SSH_USER/.kube/config
+      
    echo "#######################################################################################################"
 EOF
 

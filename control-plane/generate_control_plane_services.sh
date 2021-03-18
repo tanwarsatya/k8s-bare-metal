@@ -154,7 +154,8 @@ Documentation=https://github.com/kubernetes/kubernetes
 ExecStart=/usr/local/bin/kube-controller-manager \\
   --bind-address=0.0.0.0 \\
   --cluster-cidr=${CLUSTER_CIDR} \\
-  --cluster-name=kubernetes \\
+  --cluster-name=${CLUSTER_NAME} \\
+  --allocate-node-cidrs \\
   --cluster-signing-cert-file=/var/lib/kubernetes/ca.pem \\
   --cluster-signing-key-file=/var/lib/kubernetes/ca-key.pem \\
   --kubeconfig=/var/lib/kubernetes/kube-controller-manager.kubeconfig \\

@@ -107,14 +107,14 @@ echo "--------------------------------"
     --server=https://127.0.0.1:6443 \
     --kubeconfig=control-plane/output/admin.kubeconfig
 
-  kubectl config set-credentials system:kube-controller-manager \
+  kubectl config set-credentials admin \
     --client-certificate=control-plane/output/admin.pem \
     --client-key=control-plane/output/admin-key.pem \
     --embed-certs=true \
     --kubeconfig=control-plane/output/admin.kubeconfig
 
   kubectl config set-context default \
-    --cluster=k8s-bare-metal \
+    --cluster=${CLUSTER_NAME} \
     --user=admin \
     --kubeconfig=control-plane/output/admin.kubeconfig
 
@@ -150,3 +150,28 @@ EOF
 )
 printf "${PROXY_CONFIG}" > control-plane/output/haproxy.cfg
 echo "**********************************"
+
+echo "**********************************"
+echo "3. Generating remote.kubeconfig"
+echo "--------------------------------"
+{
+  kubectl config set-cluster  ${CLUSTER_NAME} \
+    --certificate-authority=cert-authority/certs/ca.pem \
+    --embed-certs=true \
+    --server=https://${LOAD_BALANCER_IP}:6443 \
+    --kubeconfig=control-plane/output/${CLUSTER_NAME}.kubeconfig
+
+  kubectl config set-credentials admin \
+    --client-certificate=control-plane/output/admin.pem \
+    --client-key=control-plane/output/admin-key.pem \
+    --embed-certs=true \
+    --kubeconfig=control-plane/output/${CLUSTER_NAME}.kubeconfig
+
+  kubectl config set-context default \
+    --cluster=${CLUSTER_NAME} \
+    --user=admin \
+    --kubeconfig=control-plane/output/${CLUSTER_NAME}.kubeconfig
+
+  kubectl config use-context default --kubeconfig=control-plane/output/${CLUSTER_NAME}.kubeconfig
+}
+
