@@ -50,4 +50,4 @@ WORKER_PLANE_CRI_TOOLS_VERSION="v1.18.0"
 #declare -a WORKER_PLANE_NODES=("k8s-worker-1" "k8s-worker-2" "k8s-worker-3")
 declare -a WORKER_PLANE_NODES=("k8s-worker-1")
 # this is used to generate cni bridge config file
-WORKER_PLANE_POD_CIDR=("10.244.1.0/24")
+WORKER_PLANE_POD_CIDR=("10.32.0.0/12")
