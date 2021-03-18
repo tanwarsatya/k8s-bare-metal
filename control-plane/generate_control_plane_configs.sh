@@ -58,7 +58,7 @@ echo "--------------------------------"
     --kubeconfig=control-plane/output/kube-controller-manager.kubeconfig
 
   kubectl config set-context default \
-    --cluster=k8s-bare-metal \
+    --cluster=${CLUSTER_NAME} \
     --user=system:kube-controller-manager \
     --kubeconfig=control-plane/output/kube-controller-manager.kubeconfig
 
@@ -74,14 +74,14 @@ echo "--------------------------------"
     --server=https://127.0.0.1:6443 \
     --kubeconfig=control-plane/output/kube-scheduler.kubeconfig
 
-  kubectl config set-credentials system:kube-controller-manager \
+  kubectl config set-credentials system:kube-scheduler \
     --client-certificate=control-plane/output/kube-scheduler.pem \
     --client-key=control-plane/output/kube-scheduler-key.pem \
     --embed-certs=true \
     --kubeconfig=control-plane/output/kube-scheduler.kubeconfig
 
   kubectl config set-context default \
-    --cluster=k8s-bare-metal \
+    --cluster=${CLUSTER_NAME} \
     --user=system:kube-scheduler \
     --kubeconfig=control-plane/output/kube-scheduler.kubeconfig
 
