@@ -6,16 +6,9 @@ FILE=variables.sh && test -f $FILE && source $FILE
 LOAD_BALANCER_IP=( $(host ${CLUSTER_API_LOAD_BALANCER} | grep -oP "192.168.*.*") )
 
 
-echo "k8s-bare-metal"
-echo "--------------------------------"
-echo "control plane - generate certs"
-echo "--------------------------------"
+
 echo "1. Generating admin client cert"
 
-
-# pre steps
-# create output directory
-sudo mkdir -p output
 
 cfssl gencert \
   -ca=cert-authority/certs/ca.pem \

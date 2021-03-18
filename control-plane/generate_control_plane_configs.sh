@@ -120,25 +120,9 @@ echo "--------------------------------"
 
   kubectl config use-context default --kubeconfig=control-plane/output/admin.kubeconfig
 }
+
 echo "**********************************"
-echo "4. Generating encryption-config.yaml"
-echo "--------------------------------"
-ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
-cat > control-plane/output/encryption-config.yaml <<EOF
-kind: EncryptionConfig
-apiVersion: v1
-resources:
-  - resources:
-      - secrets
-    providers:
-      - aescbc:
-          keys:
-            - name: key1
-              secret: ${ENCRYPTION_KEY}
-      - identity: {}
-EOF
-echo "**********************************"
-echo "5. Generating haproxy.config"
+echo "4. Generating haproxy.config"
 echo "--------------------------------"
 
 LOAD_BALANCER_IP=( $(host ${CLUSTER_API_LOAD_BALANCER} | grep -oP "192.168.*.*")  )

@@ -4,6 +4,10 @@ source variables.sh
 echo "k8s-bare-metal"
 echo "control plane installation"
 
+# pre steps
+# create output directory
+sudo mkdir -p control-plane/output
+
 #generate root cert if not available 
 CA_PEM_FILE=cert-authority/certs/ca.pem
 CA_KEY_FILE=cert-authority/certs/ca-key.pem

@@ -175,9 +175,15 @@ done
 fi
 
 # ______________________________________________________________________________________________________________
-echo "5. Generating 10-bridge.conf"
+echo "5. Generating 10-bridge.conf for worker nodes"
+for ((i=0;i<${#WORKER_PLANE_NODES[@]};i++))
 
-cat > worker-plane/output/kubelet-config.yaml <<EOF 
+do
+echo "generating cni bridge conf for ${WORKER_PLANE_NODES[$i]} node"  
+
+  NODE_IP=( "$(host ${WORKER_PLANE_NODES[$i]} | grep -oP "192.168.*.*")" )
+  
+cat > worker-plane/output/${WORKER_PLANE_NODES[$i]}.10-bridge.conf <<EOF 
 {
     "cniVersion": "0.3.1",
     "name": "bridge",
@@ -188,12 +194,14 @@ cat > worker-plane/output/kubelet-config.yaml <<EOF
     "ipam": {
         "type": "host-local",
         "ranges": [
-          [{"subnet": "${POD_CIDR}"}]
+          [{"subnet": "${WORKER_PLANE_POD_CIDR[$i]}"}]
         ],
         "routes": [{"dst": "0.0.0.0/0"}]
     }
 }
 EOF
+done
+
 # ________________________________________________________________________________________________________________
 
 

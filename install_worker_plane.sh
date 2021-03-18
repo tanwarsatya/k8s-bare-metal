@@ -4,6 +4,8 @@ source variables.sh
 echo "k8s-bare-metal"
 echo "worker plane installation"
 
+sudo mkdir -p worker-plane/output
+
 #generate root cert if not available 
 CA_PEM_FILE=cert-authority/certs/ca.pem
 CA_KEY_FILE=cert-authority/certs/ca-key.pem

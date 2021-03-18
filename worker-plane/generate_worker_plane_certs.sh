@@ -6,9 +6,6 @@ echo "worker plane - generate cert files"
 FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
 
-# create output directory
-sudo mkdir -p worker-plane/output
-
 # _____________________________________________________________________________________________________________
 echo "1. Generating kube-proxy client cert"
 

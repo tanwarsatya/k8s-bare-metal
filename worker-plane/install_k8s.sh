@@ -42,19 +42,21 @@ do
      #Create directories for k8s
       echo "Creating k8s directories"
       sudo mkdir -p /etc/cni/net.d \
+                    /etc/containerd \
                     /opt/cni/bin \
                     /var/lib/kubelet \
                     /var/lib/kube-proxy \
                     /var/lib/kubernetes \
                     /var/run/kubernetes
+                
    
      #download k8s binaries
      #_________________________________________________________________________________
      echo "download k8s - ${CLUSTER_VERSION} binaries" 
      wget -q --show-progress --timestamping -P /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries \
-     https://github.com/kubernetes-sigs/cri-tools/releases/download/${WORKER_PLANE_CRI_TOOLS_VESION}/crictl-${WORKER_PLANE_CRI_TOOLS_VERSION}-linux-amd64.tar.gz \
+     https://github.com/kubernetes-sigs/cri-tools/releases/download/${WORKER_PLANE_CRI_TOOLS_VERSION}/crictl-${WORKER_PLANE_CRI_TOOLS_VERSION}-linux-amd64.tar.gz \
      https://github.com/opencontainers/runc/releases/download/${WORKER_PLANE_RUNC_VERSION}/runc.amd64 \
-     https://github.com/containernetworking/plugins/releases/download/${WORKER_PLANE_CNI_PLUGIN_VESION}/cni-plugins-linux-amd64-${WORKER_PLANE_CNI_PLUGIN_VERSION}.tgz \
+     https://github.com/containernetworking/plugins/releases/download/${WORKER_PLANE_CNI_PLUGIN_VERSION}/cni-plugins-linux-amd64-${WORKER_PLANE_CNI_PLUGIN_VERSION}.tgz \
      https://github.com/containerd/containerd/releases/download/${WORKER_PLANE_CONTAINERD_VERSION}/containerd-${WORKER_PLANE_CONTAINERD_VERSION:1}-linux-amd64.tar.gz \
      https://storage.googleapis.com/kubernetes-release/release/${CLUSTER_VERSION}/bin/linux/amd64/kubectl \
      https://storage.googleapis.com/kubernetes-release/release/${CLUSTER_VERSION}/bin/linux/amd64/kube-proxy \
@@ -108,13 +110,11 @@ do
       sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/output/kube-proxy-config.yaml /var/lib/kube-proxy
       sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/output/kubelet-config.yaml /var/lib/kubelet
       
-       # copy cert-auth required certs
-    # _____________________________________________________________________________________
-      echo "copy cert-auth certs to /var/lib/kubernetes directory"
-      sudo cp /home/$SSH_USER/k8s-bare-metal/cert-authority/certs/ca.pem \
-              /home/$SSH_USER/k8s-bare-metal/cert-authority/certs/ca-key.pem \
-              /var/lib/kubernetes 
-         
+      echo "copy containerd and cni config files - conf.toml 10-bridge.conf and 99-loopback.conf"
+      sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/output/${NODE_NAME}.10-bridge.conf /etc/cni/net.d/10-bridge.conf
+      sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/config/99-loopback.conf /etc/cni/net.d/99-loopback.conf
+      sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/config/config.toml /etc/containerd/config.toml
+              
     
       #-------------- TLS BOOTSTRAPPING OPTIONS  ----------------------------
       if [ "$CLUSTER_TLS_BOOTSTRAPING" = false ] ; then

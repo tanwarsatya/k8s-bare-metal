@@ -20,7 +20,7 @@ do
 
 
     echo "sync the k8s_bare_metal folder to the node"
-    sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal $SSH_USER@$NODE_NAME:/home/$SSH_USER
+    sudo rsync -avzq  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal $SSH_USER@$NODE_NAME:/home/$SSH_USER
 
     echo "executing remote shell commands"
     echo "#######################################################################################################"
@@ -31,12 +31,17 @@ do
      wget -q --https-only --timestamping -P /home/$SSH_USER/k8s-bare-metal/control-plane/binaries \
        "https://github.com/etcd-io/etcd/releases/download/${CONTROL_PLANE_ETCD_VERSION}/etcd-${CONTROL_PLANE_ETCD_VERSION}-linux-amd64.tar.gz"
 
-     sudo tar -C /home/$SSH_USER/k8s-bare-metal/control-plane/binaries -xvf /home/$SSH_USER/k8s-bare-metal/control-plane/binaries/etcd-${CONTROL_PLANE_ETCD_VERSION}-linux-amd64.tar.gz
+     echo "expand etcd files "
+     sudo tar  -xf /home/$SSH_USER/k8s-bare-metal/control-plane/binaries/etcd-${CONTROL_PLANE_ETCD_VERSION}-linux-amd64.tar.gz \
+                -C /home/$SSH_USER/k8s-bare-metal/control-plane/binaries
 
     # Disale existing services
      echo "stop and disable etcd service";
      sudo systemctl stop etcd 
      sudo systemctl disable etcd 
+
+    # Clean all data
+      sudo rm -rf /var/lib/etcd/default.etcd 
     
     # Create directories for etcd
       echo "Creating etcd directories"
@@ -46,18 +51,18 @@ do
 
     # copy required certs
       echo "copy ca.pem etcd.pem and etcd-key.pem to /etcd/etcd directory"
-      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/cert-authority/certs/ca.pem \
-              /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/etcd.pem \
-              /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/etcd-key.pem \
+      sudo cp /home/$SSH_USER/k8s-bare-metal/cert-authority/certs/ca.pem \
+              /home/$SSH_USER/k8s-bare-metal/control-plane/output/etcd.pem \
+              /home/$SSH_USER/k8s-bare-metal/control-plane/output/etcd-key.pem \
               /etc/etcd 
 
     # copy etcd,etcdctl to /usr/local/bin
       echo "copy etcd binaries to /usr/local/bin"
-      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/binaries/etcd-v3.4.10-linux-amd64/etcd* /usr/local/bin 
+      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/binaries/etcd-v3.4.10-linux-amd64/etcd* /usr/local/bin 
     
     # copy etcd.service to /etc/systemd/system directory
       echo "copy $NODE_NAME.etcd.service to /etc/systemd/system"
-      sudo cp /home/$CONTROL_PLANE_SSH_USER/k8s-bare-metal/control-plane/output/${NODE_NAME}.etcd.service /etc/systemd/system/etcd.service
+      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/output/${NODE_NAME}.etcd.service /etc/systemd/system/etcd.service
 
     # start the service
       echo "enable and start the etcd" 

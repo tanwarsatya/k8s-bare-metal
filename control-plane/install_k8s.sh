@@ -19,7 +19,7 @@ do
     echo "________________________________________________________"
     
     echo "sync the k8s-bare-metal folder to the node"
-    sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal $SSH_USER@$NODE_NAME:/home/$SSH_USER
+    sudo rsync -avzq  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal $SSH_USER@$NODE_NAME:/home/$SSH_USER
 
     echo "executing remote shell commands"
     echo "#######################################################################################################"
@@ -63,6 +63,7 @@ do
       echo "copy k8s configs to /var/lib/kubernetes directory"
       sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/output/*.kubeconfig \
               /home/$SSH_USER/k8s-bare-metal/control-plane/output/*.yaml \
+              /home/$SSH_USER/k8s-bare-metal/control-plane/config/*.yaml \
               /var/lib/kubernetes 
         
       
@@ -100,10 +101,10 @@ do
 
       echo "sleep 10 sec before applying rbac role and bindings"
       sudo sleep 10 
-      sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/config/kube-apiserver-clusterrole.yaml                 
-      sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/config/kube-apiserver-clusterrole-binding.yaml
-      echo "apply tls boot straping token"
-      sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/output/bootstrap-token-${BOOTSTRAP_TOKEN_ID}.yaml
+      sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/config/kubelet-auth-role.yaml                 
+      sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/config/kubelet-auth-role-binding.yaml
+      #echo "apply tls boot straping token"
+      #sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/output/bootstrap-token-${BOOTSTRAP_TOKEN_ID}.yaml
     
    echo "#######################################################################################################"
 EOF

@@ -8,11 +8,11 @@ FILE=variables.sh && test -f $FILE && source $FILE
 echo "--------------------------------"
 echo "Install HA Proxy as loadbalancer for api server "
 echo "--------------------------------"
-if [ "LOAD_BALANCER_IP" != "" ]; then
+if [ LOAD_BALANCER_IP != "" ]; then
 
 #copy the k8s-bare-metal folder
 echo "sync the k8s_bare_metal folder to the node"
-sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal $SSH_USER@$CLUSTER_API_LOAD_BALANCER:/home/$SSH_USER
+sudo rsync -avzq  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal $SSH_USER@$CLUSTER_API_LOAD_BALANCER:/home/$SSH_USER
 
 
 echo "executing remote shell commands"
@@ -31,7 +31,7 @@ echo "Install ha proxy  "
 sudo apt-get update && sudo apt-get install -y haproxy
 
 echo "Copy ha proxy config and start service"
-sudo cp /home/$SSH_USERR/k8s-bare-metal/control-plane/output/haproxy.cfg /etc/haproxy
+sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/output/haproxy.cfg /etc/haproxy
 sudo service haproxy restart
 
 EOF
