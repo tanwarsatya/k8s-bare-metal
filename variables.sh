@@ -15,6 +15,8 @@ CLUSTER_SVC_CIDR="10.52.0.0/22"
 CLUSTER_TLS_BOOTSTRAPING=false
 # cluster api load balancer
 CLUSTER_API_LOAD_BALANCER="k8s-master-lb"
+# choose a provide from kube-router , calico , cillium or weavenet.
+CLUSTER_CNI_PROVIDER="kube-router"
 # SSH user name and cert file
 SSH_USER="stanwar"
 SSH_CERT="/home/stanwar/.ssh/id_rsa"
@@ -49,7 +51,8 @@ WORKER_PLANE_CONTAINERD_VERSION="v1.3.6"
 WORKER_PLANE_RUNC_VERSION="v1.0.0-rc91"
 WORKER_PLANE_CNI_PLUGIN_VERSION="v0.8.6"
 WORKER_PLANE_CRI_TOOLS_VERSION="v1.18.0"
-#declare -a WORKER_PLANE_NODES=("k8s-worker-1" "k8s-worker-2" "k8s-worker-3")
-declare -a WORKER_PLANE_NODES=("k8s-worker-1")
+declare -a WORKER_PLANE_NODES=("k8s-worker-1" "k8s-worker-2" "k8s-worker-3")
+#declare -a WORKER_PLANE_NODES=("k8s-worker-1")
 # this is used to generate cni bridge config file
-WORKER_PLANE_POD_CIDR=("10.32.0.0/12")
+
+

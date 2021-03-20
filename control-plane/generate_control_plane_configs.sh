@@ -3,7 +3,7 @@ FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
 
 # create control-plane/output directory
-sudo mkdir -p control-plane/output
+mkdir -p control-plane/output
 
 echo "k8s-bare-metal"
 echo "--------------------------------"

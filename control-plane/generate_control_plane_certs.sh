@@ -3,6 +3,8 @@
 FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
 
+mkdir -p control-plane/output
+
 LOAD_BALANCER_IP=( $(host ${CLUSTER_API_LOAD_BALANCER} | grep -oP "192.168.*.*") )
 
 

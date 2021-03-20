@@ -9,7 +9,7 @@ echo "--------------------------------"
 echo "control plane - generate service files"
 
 # create control-plane/output directory
-sudo mkdir -p control-plane/output
+mkdir -p control-plane/output
 
 # Prep Steps
 #------------------------------------------------------------------------------------

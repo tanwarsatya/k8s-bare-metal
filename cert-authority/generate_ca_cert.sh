@@ -4,6 +4,6 @@ echo "--------------------------------"
 echo "cert-authority - generate certs"
 echo "--------------------------------"
 
-sudo mkdir -p certs
+mkdir -p certs
 
 cfssl gencert -initca config/ca-csr.json | cfssljson -bare cert/ca

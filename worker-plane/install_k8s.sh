@@ -45,7 +45,6 @@ do
                     /opt/cni/bin \
                     /var/lib/kubelet \
                     /var/lib/kube-proxy \
-                    /var/lib/kubernetes \
                     /var/run/kubernetes
                 
    
@@ -78,7 +77,7 @@ do
      echo "unzip containerd to binaries folder and copy to correct folder"
      #---------- Containerd --------------------------
      sudo mkdir -p /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd
-     sudo tar -xvfq /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd-${WORKER_PLANE_CONTAINERD_VERSION:1}-linux-amd64.tar.gz -C /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd 
+     sudo tar -xvf /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd-${WORKER_PLANE_CONTAINERD_VERSION:1}-linux-amd64.tar.gz -C /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd 
      sudo chmod 755 /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd/bin/*
      sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/binaries/containerd/bin/* /bin/
      
@@ -115,14 +114,14 @@ do
        
       # copy required config files
       # _____________________________________________________________________________________ 
-      echo "copy k8s configs to /var/lib/kubernetes directory"
+      echo "copy k8s configs to /var/lib directory"
       sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/output/kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
       sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/output/kube-proxy-config.yaml /var/lib/kube-proxy
       sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/output/kubelet-config.yaml /var/lib/kubelet
       
       echo "copy containerd and cni config files - conf.toml 10-bridge.conf and 99-loopback.conf"
-      sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/output/${NODE_NAME}.10-bridge.conf /etc/cni/net.d/10-bridge.conf
-      sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/config/99-loopback.conf /etc/cni/net.d/99-loopback.conf
+      #sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/output/${NODE_NAME}.10-bridge.conf /etc/cni/net.d/10-bridge.conf
+      #sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/config/99-loopback.conf /etc/cni/net.d/99-loopback.conf
       sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/config/config.toml /etc/containerd/config.toml
               
     

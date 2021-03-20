@@ -101,20 +101,7 @@ do
        sudo systemctl restart nginx
        sudo systemctl enable nginx 
 
-
-      #Add the cluster role and role binding
-
-      echo "sleep 10 sec before applying rbac role and bindings"
-      sudo sleep 10 
-      sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/config/kubelet-auth-role.yaml                 
-      sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/config/kubelet-auth-role-binding.yaml
-      #echo "apply tls boot straping token"
-      #sudo kubectl apply -f /home/$SSH_USER/k8s-bare-metal/control-plane/output/bootstrap-token-${BOOTSTRAP_TOKEN_ID}.yaml
-    
-
-      # Add the config file for user
-      sudo cp  /home/$SSH_USER/k8s-bare-metal/control-plane/output/admin.kubeconfig /home/$SSH_USER/.kube/config
-      sudo chmod 777 /home/$SSH_USER/.kube/config
+ 
       
    echo "#######################################################################################################"
 EOF

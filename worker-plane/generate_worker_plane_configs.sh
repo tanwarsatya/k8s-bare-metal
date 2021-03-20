@@ -174,35 +174,6 @@ done
 
 fi
 
-# ______________________________________________________________________________________________________________
-echo "5. Generating 10-bridge.conf for worker nodes"
-for ((i=0;i<${#WORKER_PLANE_NODES[@]};i++))
-
-do
-echo "generating cni bridge conf for ${WORKER_PLANE_NODES[$i]} node"  
-
-  NODE_IP=( "$(host ${WORKER_PLANE_NODES[$i]} | grep -oP "192.168.*.*")" )
-  
-cat > worker-plane/output/${WORKER_PLANE_NODES[$i]}.10-bridge.conf <<EOF 
-{
-    "cniVersion": "0.3.1",
-    "name": "bridge",
-    "type": "bridge",
-    "bridge": "cnio0",
-    "isGateway": true,
-    "ipMasq": true,
-    "ipam": {
-        "type": "host-local",
-        "ranges": [
-          [{"subnet": "${WORKER_PLANE_POD_CIDR[$i]}"}]
-        ],
-        "routes": [{"dst": "0.0.0.0/0"}]
-    }
-}
-EOF
-done
-
-# ________________________________________________________________________________________________________________
 
 
 # ****************************************************************************************************************
