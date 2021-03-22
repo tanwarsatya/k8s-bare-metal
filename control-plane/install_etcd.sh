@@ -20,10 +20,12 @@ do
 
 
     echo "sync the k8s_bare_metal folder to the node"
-    sudo rsync -avzq  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal $SSH_USER@$NODE_NAME:/home/$SSH_USER
+      rsync -avzq  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal/cert-authority $SSH_USER@$NODE_NAME:/home/$SSH_USER/k8s-bare-metal
+    rsync -avzq  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal/control-plane $SSH_USER@$NODE_NAME:/home/$SSH_USER/k8s-bare-metal
 
     echo "executing remote shell commands"
     echo "#######################################################################################################"
+    ssh-keygen -q -f "/home/$USER/.ssh/known_hosts" -R $NODE_NAME
     ssh -i $SSH_CERT -o StrictHostKeyChecking=no $SSH_USER@$NODE_NAME /bin/bash << EOF 
       
     # download etcd binaries

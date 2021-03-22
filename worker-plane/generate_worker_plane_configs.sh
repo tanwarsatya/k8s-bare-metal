@@ -7,7 +7,7 @@ FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
 
 # create output directory
-sudo mkdir -p worker-plane/output
+mkdir -p worker-plane/output
 
 LOAD_BALANCER_IP=( $(host $CLUSTER_API_LOAD_BALANCER | grep -oP "192.168.*.*") )
 echo "Load Balancer - $CLUSTER_API_LOAD_BALANCER ip is $LOAD_BALANCER_IP"

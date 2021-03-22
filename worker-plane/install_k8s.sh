@@ -19,10 +19,12 @@ do
     echo "________________________________________________________"
     
     echo "sync the k8s-bare-metal folder to the node"
-    sudo rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal $SSH_USER@$NODE_NAME:/home/$SSH_USER
+     rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal/cert-authority $SSH_USER@$NODE_NAME:/home/$SSH_USER/k8s-bare-metal
+    rsync -avz  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal/worker-plane $SSH_USER@$NODE_NAME:/home/$SSH_USER/k8s-bare-metal
 
     echo "executing remote shell commands"
     echo "#######################################################################################################"
+    ssh-keygen -q -f "/home/$USER/.ssh/known_hosts" -R $NODE_NAME
     ssh -t -i $SSH_CERT -o StrictHostKeyChecking=no $SSH_USER@$NODE_NAME /bin/bash << EOF 
     
     # Disable swap off

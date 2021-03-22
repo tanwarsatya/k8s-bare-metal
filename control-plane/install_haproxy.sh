@@ -14,11 +14,12 @@ if [[ ! " ${CONTROL_PLANE_NODES[@]} " =~ " ${CLUSTER_API_LOAD_BALANCER} " ]] && 
 echo "installing ha proxy on node $CLUSTER_API_LOAD_BALANCER : $LOAD_BALANCER_IP"
 #copy the k8s-bare-metal folder
 echo "sync the k8s_bare_metal folder to the node"
-sudo rsync -avzq  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal $SSH_USER@$CLUSTER_API_LOAD_BALANCER:/home/$SSH_USER
+rsync -avzq  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal/cert-authority $SSH_USER@$CLUSTER_API_LOAD_BALANCER:/home/$SSH_USER/k8s-bare-metal
+rsync -avzq  -e "ssh -o StrictHostKeyChecking=no -i $SSH_CERT" ../k8s-bare-metal/control-plane $SSH_USER@$CLUSTER_API_LOAD_BALANCER:/home/$SSH_USER/k8s-bare-metal
 
 
 echo "executing remote shell commands"
-    
+ssh-keygen -q -f "/home/$USER/.ssh/known_hosts" -R $CLUSTER_API_LOAD_BALANCER    
 ssh -i $SSH_CERT -o StrictHostKeyChecking=no $SSH_USER@$CLUSTER_API_LOAD_BALANCER /bin/bash << EOF 
 
 

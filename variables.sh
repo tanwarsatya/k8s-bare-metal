@@ -33,13 +33,13 @@ BOOTSTRAP_TOKEN_SECRET="f395accd246ae52d"
 # control plane variables
 # ***************************************************************************
 CONTROL_PLANE_K8S_VERSION="v1.18.6" 
-declare -a CONTROL_PLANE_NODES=("k8s-master-1")
-#declare -a CONTROL_PLANE_NODES=("k8s-master-1" "k8s-master-2" "k8s-master-3")
+#declare -a CONTROL_PLANE_NODES=("k8s-master-1")
+declare -a CONTROL_PLANE_NODES=("k8s-master-1" "k8s-master-2" "k8s-master-3")
 CONTROL_PLANE_SERVICE_IP_RANGE="10.32.0.0/16"
 #etcd variables
 CONTROL_PLANE_ETCD_VERSION="v3.4.10" 
-declare -a CONTROL_PLANE_ETCD_NODES=("k8s-master-1")
-#declare -a CONTROL_PLANE_ETCD_NODES=("k8s-master-1" "k8s-master-2" "k8s-master-3")
+#declare -a CONTROL_PLANE_ETCD_NODES=("k8s-master-1")
+declare -a CONTROL_PLANE_ETCD_NODES=("k8s-master-1" "k8s-master-2" "k8s-master-3")
 
 
 
@@ -53,6 +53,6 @@ WORKER_PLANE_CNI_PLUGIN_VERSION="v0.8.6"
 WORKER_PLANE_CRI_TOOLS_VERSION="v1.18.0"
 declare -a WORKER_PLANE_NODES=("k8s-worker-1" "k8s-worker-2" "k8s-worker-3")
 #declare -a WORKER_PLANE_NODES=("k8s-worker-1")
-# this is used to generate cni bridge config file
+
 
 

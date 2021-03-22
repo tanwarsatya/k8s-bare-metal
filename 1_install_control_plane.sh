@@ -2,9 +2,12 @@
 source variables.sh
 
 echo "k8s-bare-metal"
-echo "worker plane installation"
+echo "control plane installation"
 
-sudo mkdir -p worker-plane/output
+# pre steps
+# create output directory
+rm -rf control-plane/output
+mkdir -p control-plane/output
 
 #generate root cert if not available 
 CA_PEM_FILE=cert-authority/certs/ca.pem
@@ -14,21 +17,29 @@ if [ -f "$CA_PEM_FILE" ] && [ -f "$CA_KEY_FILE" ]; then
 echo " Root CA File exists : ca.pem and ca-key.pem exists, using existing root ca files."
 else
 echo " No Root CA file found generating new ca files."
-sudo mkdir -p cert-authority/certs
+mkdir -p cert-authority/certs
 cfssl gencert -initca cert-authority/config/ca-csr.json | cfssljson -bare cert-authority/certs/ca
 fi
 
 # Generate control plane certs
-sudo bash worker-plane/generate_worker_plane_certs.sh
+bash control-plane/generate_control_plane_certs.sh
 
 # Generate config files
-sudo bash worker-plane/generate_worker_plane_configs.sh
+bash control-plane/generate_control_plane_configs.sh
 
 # generate service files
-sudo bash worker-plane/generate_worker_plane_services.sh
+bash control-plane/generate_control_plane_services.sh
 
 
-# Install K8s worker plane components
-sudo bash worker-plane/install_k8s.sh
+# Install Etcd
+bash control-plane/install_etcd.sh
 
+# Install HaProxy
+bash control-plane/install_haproxy.sh
+
+# Install K8s control plane components
+bash control-plane/install_k8s.sh
+
+# Post Install 
+#bash control-plane/install_post.sh
 

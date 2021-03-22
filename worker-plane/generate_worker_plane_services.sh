@@ -7,7 +7,7 @@ FILE=variables.sh && test -f $FILE && source $FILE
 echo "worker plane - generate service files"
 
 # create control-plane/output directory
-sudo mkdir -p worker-plane/output
+mkdir -p worker-plane/output
 # ________________________________________________________________________________________________________________
 echo "1. Generating kube-proxy.service "
 

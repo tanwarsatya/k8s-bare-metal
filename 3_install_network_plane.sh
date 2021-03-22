@@ -8,8 +8,9 @@ echo "--------------------------------"
 
 # Add the config file for the current user
 echo "copy admin.kubeconfig to /home/$USER/.kube/config for local kubectl"
+mkdir -p /home/$USER/.kube
 cp  control-plane/output/$CLUSTER_NAME.kubeconfig /home/$USER/.kube/config
-sudo chmod 777 /home/$USER/.kube/config
+chmod 777 /home/$USER/.kube/config
 
 # RBAC and other related confiurations
 echo "apply rbac role and rolebinding for kubelet"
