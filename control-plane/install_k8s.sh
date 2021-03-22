@@ -111,6 +111,9 @@ do
       cp  /home/$SSH_USER/k8s-bare-metal/control-plane/output/admin.kubeconfig /home/$SSH_USER/.kube/config
       chmod 777 /home/$SSH_USER/.kube/config
       
+      # Add kubectl auto completion for user
+      source <(kubectl completion bash)
+      echo "source <(kubectl completion bash)" >> /home/$SSH_USER/.bashrc
       
    echo "#######################################################################################################"
 EOF
