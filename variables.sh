@@ -10,7 +10,7 @@ CLUSTER_VERSION="v1.18.6"
 # Cluster cidr
 CLUSTER_CIDR="10.32.0.0/12"
 # Cluster Service CIDR
-CLUSTER_SVC_CIDR="10.52.0.0/22"
+CLUSTER_SVC_CIDR="10.32.0.0/16"
 # Cluster TLS BOOT STRAPPING ALLOWED FOR WORKER NODES
 CLUSTER_TLS_BOOTSTRAPING=false
 # cluster api load balancer
@@ -35,7 +35,6 @@ BOOTSTRAP_TOKEN_SECRET="f395accd246ae52d"
 CONTROL_PLANE_K8S_VERSION="v1.18.6" 
 #declare -a CONTROL_PLANE_NODES=("k8s-master-1")
 declare -a CONTROL_PLANE_NODES=("k8s-master-1" "k8s-master-2" "k8s-master-3")
-CONTROL_PLANE_SERVICE_IP_RANGE="10.32.0.0/16"
 #etcd variables
 CONTROL_PLANE_ETCD_VERSION="v3.4.10" 
 #declare -a CONTROL_PLANE_ETCD_NODES=("k8s-master-1")

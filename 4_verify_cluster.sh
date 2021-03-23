@@ -46,6 +46,7 @@ echo "__________________________________________________________________________
 echo "verifying worker nodes "
 echo "____________________________________________________________________________"
 # use the first node of etcd cluster
+sleep 3
 kubectl get nodes -o wide
 
 
@@ -63,14 +64,16 @@ echo "__________________________________________________________________________
 echo  "create nginx"
 kubectl create deployment ngx --image=nginx
 
-echo  "scale the deployment to 10 pods"
-kubectl scale deployment ngx --replicas=10
+POD_NUM=$(shuf -i1-100 -n1)
+echo  "scale the deployment to $POD_NUM pods"
 
-echo  "wait 30 seconds to wait for pods"
-sleep 30
+kubectl scale deployment ngx --replicas=$POD_NUM
+
+echo  "wait 10 seconds for pods to start"
+sleep 10
 
 kubectl get pods -o wide
-
+kubectl get deployment ngx
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 
