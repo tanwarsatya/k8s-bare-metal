@@ -53,7 +53,7 @@ WORKER_PLANE_CRI_TOOLS_VERSION="v1.18.0"
 #declare -a WORKER_PLANE_NODES=("k8s-work-1" "k8s-work-2" "k8s-work-3")
 declare -a WORKER_PLANE_NODES=("k8s-m-1")
 # max number of pods to run on a node -default is 110
-WORKER_PLANE_MAX_PODS=500
+WORKER_PLANE_MAX_PODS=200
 
 
 
