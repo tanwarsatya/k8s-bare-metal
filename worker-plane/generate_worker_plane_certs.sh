@@ -1,10 +1,10 @@
 #!/bin/sh
 # ******************************************************************************************************
-echo "worker plane - generate cert files"
-
 
 FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
+
+ echo "^^^^^^^^^^^^^^^^^^^^Generate certs files for worker-plane^^^^^^^^^^^^^^^^^^^^^^^"
 
 mkdir -p worker-plane/output
 # _____________________________________________________________________________________________________________

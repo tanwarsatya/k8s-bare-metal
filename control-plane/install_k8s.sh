@@ -2,10 +2,7 @@
 FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
 
-echo "--------------------------------"
-echo "Install k8sd services remotely on all master nodes"
-echo "--------------------------------"
-
+ echo "^^^^^^^^^^^^^^^^^^^^Install k8sd components remotely on all control plane nodes^^^^^^^^^^^^^^^^^^^^^^^"
 
 for i in "${CONTROL_PLANE_NODES[@]}"
 do

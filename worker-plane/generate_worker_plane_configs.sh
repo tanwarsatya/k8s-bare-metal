@@ -1,10 +1,10 @@
 #!/bin/sh
 # ******************************************************************************************************
-echo "worker plane - generate configuration files"
-
 
 FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
+
+ echo "^^^^^^^^^^^^^^^^^^^^Generate config files for worker-plane^^^^^^^^^^^^^^^^^^^^^^^"
 
 # create output directory
 mkdir -p worker-plane/output

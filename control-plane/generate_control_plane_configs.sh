@@ -2,15 +2,13 @@
 FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
 
+echo "^^^^^^^^^^^^^^^^^^^^Generate config files for control-plane^^^^^^^^^^^^^^^^^^^^^^^"
+
 # create control-plane/output directory
 mkdir -p control-plane/output
 
-echo "k8s-bare-metal"
-echo "--------------------------------"
-echo "control plane - generate configuration files"
-echo "--------------------------------"
 
-echo "0. Generating bootstratper-token-${BOOTSTRAP_TOKEN_ID}.yaml for TLS Bootstrapping"
+echo "1. Generating bootstratper-token-${BOOTSTRAP_TOKEN_ID}.yaml for TLS Bootstrapping"
 
 cat > control-plane/output/bootstrap-token-${BOOTSTRAP_TOKEN_ID}.yaml <<EOF 
 apiVersion: v1
@@ -39,9 +37,7 @@ stringData:
 EOF
 
 
-echo "1. Generating kube-controller-manager.kubeconfig"
-echo "--------------------------------"
-
+echo "2. Generating kube-controller-manager.kubeconfig"
 
 
 {
@@ -64,9 +60,8 @@ echo "--------------------------------"
 
   kubectl config use-context default --kubeconfig=control-plane/output/kube-controller-manager.kubeconfig
 }
-echo "**********************************"
-echo "2. Generating kube-scheduler.kubeconfig and kube-scheduler.yaml"
-echo "--------------------------------"
+
+echo "3. Generating kube-scheduler.kubeconfig and kube-scheduler.yaml"
 {
   kubectl config set-cluster ${CLUSTER_NAME} \
     --certificate-authority=cert-authority/certs/ca.pem \
@@ -97,9 +92,9 @@ leaderElection:
   leaderElect: true
 EOF
 
-echo "**********************************"
+
 echo "3. Generating admin.kubeconfig"
-echo "--------------------------------"
+
 {
   kubectl config set-cluster  ${CLUSTER_NAME} \
     --certificate-authority=cert-authority/certs/ca.pem \
@@ -121,9 +116,9 @@ echo "--------------------------------"
   kubectl config use-context default --kubeconfig=control-plane/output/admin.kubeconfig
 }
 
-echo "**********************************"
+
 echo "4. Generating haproxy.config"
-echo "--------------------------------"
+
 
 LOAD_BALANCER_IP=( $(host ${CLUSTER_API_LOAD_BALANCER} | grep -oP "192.168.*.*")  )
 
@@ -149,11 +144,11 @@ backend kubernetes-master-nodes
 EOF
 )
 printf "${PROXY_CONFIG}" > control-plane/output/haproxy.cfg
-echo "**********************************"
 
-echo "**********************************"
+
+
 echo "3. Generating remote.kubeconfig"
-echo "--------------------------------"
+
 {
   kubectl config set-cluster  ${CLUSTER_NAME} \
     --certificate-authority=cert-authority/certs/ca.pem \

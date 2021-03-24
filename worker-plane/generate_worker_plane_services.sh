@@ -3,8 +3,9 @@
 FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
 
-# ****************************************************************************************************************
-echo "worker plane - generate service files"
+
+
+ echo "^^^^^^^^^^^^^^^^^^^^Generate service files for worker-plane^^^^^^^^^^^^^^^^^^^^^^^"
 
 # create control-plane/output directory
 mkdir -p worker-plane/output

@@ -1,9 +1,8 @@
 #!/bin/sh
 FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
-echo "--------------------------------"
-echo "Install HA Proxy as loadbalancer for api server "
-echo "--------------------------------"
+
+ echo "^^^^^^^^^^^^^^^^^^^^Install HA Proxy as loadbalancer for api server^^^^^^^^^^^^^^^^^^^^^^^"
 
 LOAD_BALANCER_IP=( $(host $CLUSTER_API_LOAD_BALANCER | grep -oP "192.168.*.*")  )
 

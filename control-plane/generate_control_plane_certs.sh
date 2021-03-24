@@ -2,12 +2,11 @@
 # import vairables
 FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
+ echo "^^^^^^^^^^^^^^^^^^^^Generate certs for control-plane^^^^^^^^^^^^^^^^^^^^^^^"
 
 mkdir -p control-plane/output
 
 LOAD_BALANCER_IP=( $(host ${CLUSTER_API_LOAD_BALANCER} | grep -oP "192.168.*.*") )
-echo "balancer: $LOAD_BALANCER"
-
 
 echo "1. Generating admin client cert"
 
@@ -99,7 +98,7 @@ cfssl gencert \
 
 
 
-echo "5. Generating service-account cert -----------------------------"
+echo "5. Generating service-account cert"
 
 cfssl gencert \
   -ca=cert-authority/certs/ca.pem \

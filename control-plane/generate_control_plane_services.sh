@@ -4,9 +4,7 @@ FILE=../variables.sh && test -f $FILE && source $FILE
 FILE=variables.sh && test -f $FILE && source $FILE
 
 
-echo "k8s-bare-metal"
-echo "--------------------------------"
-echo "control plane - generate service files"
+ echo "^^^^^^^^^^^^^^^^^^^^Generate service files for control-plane^^^^^^^^^^^^^^^^^^^^^^^"
 
 # create control-plane/output directory
 mkdir -p control-plane/output
@@ -33,9 +31,8 @@ done
 
 #-----------------------------------------------------------------------------------
 
-echo "--------------------------------"
 echo "1. Generating multiple etcd.service for nodes"
-echo "--------------------------------"
+
 
 for i in "${CONTROL_PLANE_ETCD_NODES[@]}"
 do
@@ -82,9 +79,9 @@ fi
 done
 
 
-echo "********************************"
+
 echo "2. Generating kube-apiserver.service "
-echo "--------------------------------"
+
 
 for i in "${CONTROL_PLANE_NODES[@]}"
 do
@@ -141,9 +138,9 @@ else
 fi
 done
 
-echo "********************************"
+
 echo "3. Generating kube-controller-manager.service "
-echo "--------------------------------"
+
 
 cat > control-plane/output/kube-controller-manager.service  <<EOF 
 [Unit]
@@ -173,9 +170,9 @@ WantedBy=multi-user.target
 EOF
 
 
-echo "********************************"
+
 echo "4. Generating kube-schduler.service "
-echo "--------------------------------"
+
 
 
 
