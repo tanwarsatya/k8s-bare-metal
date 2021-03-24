@@ -24,22 +24,21 @@ fi
 # Generate control plane certs
 bash control-plane/generate_control_plane_certs.sh
 
-# Generate config files
+#Generate config files
 bash control-plane/generate_control_plane_configs.sh
 
-# generate service files
+#generate service files
 bash control-plane/generate_control_plane_services.sh
 
 
-# Install Etcd
+#Install Etcd
 bash control-plane/install_etcd.sh
 
-# Install HaProxy
+#Install HaProxy
 bash control-plane/install_haproxy.sh
 
-# Install K8s control plane components
+#Install K8s control plane components
 bash control-plane/install_k8s.sh
 
-# Post Install 
-#bash control-plane/install_post.sh
+
 

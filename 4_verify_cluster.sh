@@ -61,10 +61,13 @@ echo "__________________________________________________________________________
 echo "Deploy nginx pods  "
 echo "____________________________________________________________________________"
 # use the first node of etcd cluster
+echo  "remove existing nginx deployment"
+kubectl delete deployment ngx 
+
 echo  "create nginx"
 kubectl create deployment ngx --image=nginx
 
-POD_NUM=$(shuf -i1-100 -n1)
+POD_NUM=$(shuf -i1-30 -n1)
 echo  "scale the deployment to $POD_NUM pods"
 
 kubectl scale deployment ngx --replicas=$POD_NUM

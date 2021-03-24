@@ -23,6 +23,9 @@ kubectl apply -f control-plane/output/bootstrap-token-${BOOTSTRAP_TOKEN_ID}.yaml
 case $CLUSTER_CNI_PROVIDER in
 
   kube-router)
+    echo "reset existing kube-router cni plugin"
+    kubectl delete -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/generic-kuberouter.yaml
+    
     echo "applying kube-router cni plugin"
     kubectl apply -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/generic-kuberouter.yaml
     ;;

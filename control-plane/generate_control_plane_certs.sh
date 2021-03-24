@@ -6,7 +6,7 @@ FILE=variables.sh && test -f $FILE && source $FILE
 mkdir -p control-plane/output
 
 LOAD_BALANCER_IP=( $(host ${CLUSTER_API_LOAD_BALANCER} | grep -oP "192.168.*.*") )
-
+echo "balancer: $LOAD_BALANCER"
 
 
 echo "1. Generating admin client cert"
@@ -53,8 +53,10 @@ do
   CONTROL_PLANE_NODE_IPS+=( "$(host $i | grep -oP "192.168.*.*")" )
  
 done
+
 # convert to a comma seperated IP string
 CONTROL_PLANE_NODE_IPS_STRING=$(IFS=,; echo "${CONTROL_PLANE_NODE_IPS[*]}")
+#echo "ip string: $CONTROL_PLANE_NODE_IPS"
 # Set host names to be used
 KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local
 
@@ -62,7 +64,7 @@ cfssl gencert \
  -ca=cert-authority/certs/ca.pem \
   -ca-key=cert-authority/certs/ca-key.pem \
   -config=cert-authority/config/ca-config.json \
-  -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${LOAD_BALANCER_IP},${CONTROL_PLANE_NODE_IPS_STRING}, \
+  -hostname=10.32.0.1,127.0.0.1,${KUBERNETES_HOSTNAMES},${LOAD_BALANCER_IP},${CONTROL_PLANE_NODE_IPS_STRING} \
   -profile=default \
   control-plane/config/kube-apiserver-csr.json | cfssljson -bare control-plane/output/kube-apiserver
 
