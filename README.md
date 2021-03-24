@@ -7,22 +7,28 @@ Note: This is no where for production usage, enjoy the script change it and lear
 # Requirments
 Following are the requirments to run the scripts for creating k8s cluster
 1. Minimum install machine requirments
-    - 1 Master Node ( 1 vcpu - 1 gig ram - 10 gb disk) 
-    - 1 Worker Node ( 1 vcpu - 1 gig ram - 10 gb disk)
-2. Optional machine requirments
-    - 1 Load Balancer Node (only used if more than 1 master node is configured) -  ( 1 vcpu - 1 gig ram - 10 gb disk)
-    - 1 ETCD Node (same master node can be used for etcd service) - ( 1 vcpu - 1 gig ram - 10 gb disk)
+    - 1 Node  ( 1 vcpu - 1 gig ram - 10 gb disk) - Single node for worker / master / etcd  etc.
+    
+2. Optional requirments
+    - 1 Load Balancer Node if using more than 1 master node -  ( 1 vcpu - 1 gig ram - 10 gb disk)
+    - N ETCD Node for installing etcd seperate from master nodes  - ( 1 vcpu - 1 gig ram - 10 gb disk)
 2. OS and other requirments
     - Ubuntu 18.4 LTS tested
 4. SSH Configuration
-    - RSA Key based authentication with userid  (NO Password)
+    - RSA Key based authentication with userid  (with Password auth set to false)
 5. IPv4 IP Address and ability to ssh and ping to the nodes from the local network
 6. Local machine require following client tools in order to run the scripts
     - cfssljson , cfssl and kubectl ( install them under /usr/local/bin )
 
 
-# Steps to execute
-1. Clone the repository on a local machine ( Windows WSL location or Linux location)
+# Steps to execute  
+
+Note: Sripts need to be run from a local machine. This machine should be able to ping and ssh k8s install machines as specified in variables.sh file. This way we need not to ssh and login on any k8s machine for install.
+
+
+PreReq -  Install cfssljson , cfssl and kubectl on local machine.  Install them under /usr/local/bin folder.
+la
+1. Clone the repository on a local machine (Windows WSL or Linux) this is a different machine than specified in variables.sh for k8s cluster.
 2. CD to k8s-bare-metal directory
 3. Verify the variables.sh file and update variables for following
     - Cluster name
