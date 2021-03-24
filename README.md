@@ -1,14 +1,17 @@
 # k8s-bare-metal
 Step-by-step install guide and helper scripts to provision k8s on bare metal or VMs. 
 
+Note: This is no where for production usage, enjoy the script change it and learn from it.
+
 
 # Requirments
 Following are the requirments to run the scripts for creating k8s cluster
 1. Minimum install machine requirments
-    - 1 Master Node ( 1 vcpu - 1 gig ram - 10 gb disk)
-    - 1 Worker Node ( 2 vcpu - 1 gig ram - 10 gb disk)
-    - 1 Load Balancer Node (optional only used if more than 1 master node is configured) -  ( 1 vcpu - 1 gig ram - 10 gb disk)
-    - 1 ETCD Node ( optional same master node can be used for etcd service)
+    - 1 Master Node ( 1 vcpu - 1 gig ram - 10 gb disk) 
+    - 1 Worker Node ( 1 vcpu - 1 gig ram - 10 gb disk)
+2. Optional machine requirments
+    - 1 Load Balancer Node (only used if more than 1 master node is configured) -  ( 1 vcpu - 1 gig ram - 10 gb disk)
+    - 1 ETCD Node (same master node can be used for etcd service) - ( 1 vcpu - 1 gig ram - 10 gb disk)
 2. OS and other requirments
     - Ubuntu 18.4 LTS tested
 4. SSH Configuration
