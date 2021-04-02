@@ -16,6 +16,8 @@ Following are the requirments to run the scripts for creating k8s cluster
     - Ubuntu 18.4 LTS tested
 4. SSH Configuration
     - RSA Key based authentication with userid  (with Password auth set to false)
+5. Set the configured uses to use sudo command with no password , follow the link below  
+    - https://www.tecmint.com/run-sudo-command-without-password-linux/ 
 5. IPv4 IP Address and ability to ssh and ping to the nodes from the local network
 6. Local machine require following client tools in order to run the scripts
     - cfssljson , cfssl and kubectl ( install them under /usr/local/bin )
