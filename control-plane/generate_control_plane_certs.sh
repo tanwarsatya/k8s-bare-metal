@@ -6,7 +6,7 @@ FILE=variables.sh && test -f $FILE && source $FILE
 
 mkdir -p control-plane/output
 
-LOAD_BALANCER_IP=( $(host ${CLUSTER_API_LOAD_BALANCER} | grep -oP "192.168.*.*") )
+LOAD_BALANCER_IP=( $(host ${CLUSTER_API_LOAD_BALANCER}  | head -1 | grep -o '[^ ]\+$')  )
 
 echo "1. Generating admin client cert"
 
@@ -40,7 +40,6 @@ cfssl gencert \
 
 
 
-
 echo "4. Generating kube-apiserver cert"
 
 # Get the ip address of nodes 
@@ -49,7 +48,7 @@ for i in "${CONTROL_PLANE_NODES[@]}"
 do
    # Change the pattern of ip address on basis of DHCP address assigned for your nodes
 
-  CONTROL_PLANE_NODE_IPS+=( "$(host $i | grep -oP "192.168.*.*")" )
+  CONTROL_PLANE_NODE_IPS+=( "$(host $i | head -1 | grep -o '[^ ]\+$')" )
  
 done
 
@@ -78,7 +77,7 @@ for i in "${CONTROL_PLANE_NODES[@]}"
 do
    # Change the pattern of ip address on basis of DHCP address assigned for your nodes
 
-  ETCD_NODE_IPS+=( "$(host $i | grep -oP "192.168.*.*")" )
+  ETCD_NODE_IPS+=( "$(host $i  | head -1 | grep -o '[^ ]\+$')" )
  
 done
 # convert to a comma seperated IP string

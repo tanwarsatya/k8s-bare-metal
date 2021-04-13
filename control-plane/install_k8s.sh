@@ -9,7 +9,7 @@ do
    
     
      NODE_NAME=( $i )
-    NODE_IP=( $(host $i | grep -oP "192.168.*.*")  )
+    NODE_IP=( $(host $i  | head -1 | grep -o '[^ ]\+$')  )
 
     echo "________________________________________________________"
     echo "Installation running on Node : ${NODE_NAME}"

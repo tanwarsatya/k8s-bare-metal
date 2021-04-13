@@ -120,13 +120,13 @@ echo "3. Generating admin.kubeconfig"
 echo "4. Generating haproxy.config"
 
 
-LOAD_BALANCER_IP=( $(host ${CLUSTER_API_LOAD_BALANCER} | grep -oP "192.168.*.*")  )
+LOAD_BALANCER_IP=( $(host ${CLUSTER_API_LOAD_BALANCER}  | head -1 | grep -o '[^ ]\+$')  )
 
 # Loop to create a api server cluster strings 
 for i in "${CONTROL_PLANE_NODES[@]}"
 do
    # Change the pattern of ip address on basis of DHCP address assigned for your nodes
-   API_SERVER_STRING+="\tserver $i $(host $i | grep -oP "192.168.*.*") check fall 3 rise 2\n"
+   API_SERVER_STRING+="\tserver $i $(host $i  | head -1 | grep -o '[^ ]\+$') check fall 3 rise 2\n"
 done
 
 PROXY_CONFIG=$(cat << EOF  
@@ -147,7 +147,7 @@ printf "${PROXY_CONFIG}" > control-plane/output/haproxy.cfg
 
 
 
-echo "3. Generating remote.kubeconfig"
+echo "3. Generating ${CLUSTER_NAME}.kubeconfig"
 
 {
   kubectl config set-cluster  ${CLUSTER_NAME} \

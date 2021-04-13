@@ -4,7 +4,7 @@ FILE=variables.sh && test -f $FILE && source $FILE
 
  echo "^^^^^^^^^^^^^^^^^^^^Install HA Proxy as loadbalancer for api server^^^^^^^^^^^^^^^^^^^^^^^"
 
-LOAD_BALANCER_IP=( $(host $CLUSTER_API_LOAD_BALANCER | grep -oP "192.168.*.*")  )
+LOAD_BALANCER_IP=( $(host $CLUSTER_API_LOAD_BALANCER | head -1 | grep -o '[^ ]\+$')  )
 
 # if the load balancer name is same as of control plane node don't install
 # if IP address can't be found don't install

@@ -7,7 +7,7 @@ echo "post install for network, rbac and other configurations"
 echo "--------------------------------"
 
 # Add the config file for the current user
-echo "copy admin.kubeconfig to /home/$USER/.kube/config for local kubectl"
+echo "copy $CLUSTER_NAME.kubeconfig to /home/$USER/.kube/config for local kubectl"
 mkdir -p /home/$USER/.kube
 cp  control-plane/output/$CLUSTER_NAME.kubeconfig /home/$USER/.kube/config
 chmod 777 /home/$USER/.kube/config

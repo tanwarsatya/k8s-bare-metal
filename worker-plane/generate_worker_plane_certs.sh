@@ -54,7 +54,7 @@ done
 for i in "${WORKER_PLANE_NODES[@]}"
 do
 echo "generating cert and key file for $i node"  
-  NODE_IP=( "$(host $i | grep -oP "192.168.*.*")" )
+  NODE_IP=( "$(host $i  | head -1 | grep -o '[^ ]\+$')" )
   
 cfssl gencert \
   -ca=cert-authority/certs/ca.pem \

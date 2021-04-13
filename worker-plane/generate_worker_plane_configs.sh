@@ -9,7 +9,7 @@ FILE=variables.sh && test -f $FILE && source $FILE
 # create output directory
 mkdir -p worker-plane/output
 
-LOAD_BALANCER_IP=( $(host $CLUSTER_API_LOAD_BALANCER | grep -oP "192.168.*.*") )
+LOAD_BALANCER_IP=( $(host $CLUSTER_API_LOAD_BALANCER | head -1 | grep -o '[^ ]\+$') )
 echo "Load Balancer - $CLUSTER_API_LOAD_BALANCER ip is $LOAD_BALANCER_IP"
 # ________________________________________________________________________________________________________
 echo "1. Generating kube-proxy.kubeconfig and kube-proxy-config.yaml"

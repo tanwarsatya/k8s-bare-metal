@@ -18,14 +18,14 @@ mkdir -p control-plane/output
 for i in "${CONTROL_PLANE_NODES[@]}"
 do
    # Change the pattern of ip address on basis of DHCP address assigned for your nodes
-   API_SERVER_SVC_ETCD_CLUSTER_STRING+="https://$(host $i | grep -oP "192.168.*.*"):2379,"
+   API_SERVER_SVC_ETCD_CLUSTER_STRING+="https://$(host $i | head -1 | grep -o '[^ ]\+$'):2379,"
 done
 
 #loop to create etcd server cluster strings
 for i in "${CONTROL_PLANE_ETCD_NODES[@]}"
 do
    # Change the pattern of ip address on basis of DHCP address assigned for your nodes
-   ETCD_SVC_INITIAL_CLUSTER_STRING+="${i}=https://$(host $i | grep -oP "192.168.*.*"):2380,"
+   ETCD_SVC_INITIAL_CLUSTER_STRING+="${i}=https://$(host $i | head -1 | grep -o '[^ ]\+$'):2380,"
    
 done
 
@@ -38,7 +38,7 @@ for i in "${CONTROL_PLANE_ETCD_NODES[@]}"
 do
     FILE_NAME=( "$i.etcd.service" )
     ETCD_NAME=( $i )
-    ETCD_IP=( $(host $i | grep -oP "192.168.*.*")  )
+    ETCD_IP=( $(host $i  | head -1 | grep -o '[^ ]\+$')  )
 
 if [ "$ETCD_IP" != "" ]; then
    
@@ -87,7 +87,7 @@ for i in "${CONTROL_PLANE_NODES[@]}"
 do
     FILE_NAME=( "$i.kube-apiserver.service" )
     NODE_NAME=( $i )
-    NODE_IP=( $(host $i | grep -oP "192.168.*.*")  )
+    NODE_IP=( $(host $i | head -1 | grep -o '[^ ]\+$')  )
 
 if [ "$NODE_IP" != "" ]; then
 cat > control-plane/output/${FILE_NAME}  <<EOF 
@@ -121,7 +121,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --kubelet-https=true \\
   --runtime-config='api/all=true' \\
   --service-account-key-file=/var/lib/kubernetes/service-account.pem \\
-  --service-cluster-ip-range=10.32.0.0/16 \\
+  --service-cluster-ip-range=${CLUSTER_SVC_CIDR} \\
   --service-node-port-range=30000-32767 \\
   --tls-cert-file=/var/lib/kubernetes/kube-apiserver.pem \\
   --tls-private-key-file=/var/lib/kubernetes/kube-apiserver-key.pem \\
