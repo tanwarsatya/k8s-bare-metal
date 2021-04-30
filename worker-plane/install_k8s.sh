@@ -104,6 +104,7 @@ do
               /home/$SSH_USER/k8s-bare-metal/cert-authority/certs/ca-key.pem \
               /var/lib/kubernetes 
 
+
      # copy k8s service config files to /etc/systemd/system directory
      # _____________________________________________________________________________________
       echo "copy service files to /etc/systemd/system"
@@ -133,8 +134,12 @@ do
       echo "copy node kubelet certs to /var/lib/kubelet directory"
       #------- node's kubelet cert
       sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/output/${NODE_NAME}.pem \
-              /home/$SSH_USER/k8s-bare-metal/worker-plane/output/${NODE_NAME}-key.pem \
-              /var/lib/kubelet 
+              /var/lib/kubelet/kubelet.pem
+
+      sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/output/${NODE_NAME}-key.pem \
+              /var/lib/kubelet/kubelet-key.pem 
+
+
       echo "copy ${NODE_NAME}.kubeconfig to /var/lib/kubelet/kubeconfig directory"
       sudo cp /home/$SSH_USER/k8s-bare-metal/worker-plane/output/${NODE_NAME}.kubeconfig /var/lib/kubelet/kubeconfig
 
