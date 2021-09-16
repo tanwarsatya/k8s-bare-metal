@@ -120,6 +120,8 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --kubelet-client-key=/var/lib/kubernetes/kube-apiserver-key.pem \\
   --kubelet-https=true \\
   --runtime-config='api/all=true' \\
+  --service-account-issuer=api \\
+  --service-account-signing-key-file=/var/lib/kubernetes/service-account-key.pem \\
   --service-account-key-file=/var/lib/kubernetes/service-account.pem \\
   --service-cluster-ip-range=${CLUSTER_SVC_CIDR} \\
   --service-node-port-range=30000-32767 \\

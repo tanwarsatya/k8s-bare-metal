@@ -60,7 +60,7 @@ do
 
     # copy etcd,etcdctl to /usr/local/bin
       echo "copy etcd binaries to /usr/local/bin"
-      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/binaries/etcd-v3.4.10-linux-amd64/etcd* /usr/local/bin 
+      sudo cp /home/$SSH_USER/k8s-bare-metal/control-plane/binaries/etcd-${CONTROL_PLANE_ETCD_VERSION}-linux-amd64/etcd* /usr/local/bin 
     
     # copy etcd.service to /etc/systemd/system directory
       echo "copy $NODE_NAME.etcd.service to /etc/systemd/system"
