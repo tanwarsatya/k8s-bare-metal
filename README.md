@@ -1,48 +1,36 @@
-# k8s-bare-metal
-Step-by-step install guide and helper scripts to provision k8s on bare metal or VMs. 
+# k8s-bare-metal on Windows 10
+Step-by-step install guide and helper scripts to provision k8s on local vms using multipass. 
+This is based on kubernetes hard way, but provide automation using pure shell scripts to reduce effort in provisoning cluster from scratch.
 
-Note: This is no where for production usage, enjoy the script change it and learn from it.
+The cluster provisioned only for purpose of learning and practicing scenarios for CKA/CKAD/CKS exams.
 
+This will provison a simple cluster with 1 master node and 2 worker nodes
 
-# Requirments
-Following are the requirments to run the scripts for creating k8s cluster
-1. Minimum install machine requirments
-    - 1 Node  ( 1 vcpu - 1 gig ram - 10 gb disk) - Single node for worker / master / etcd  etc.
-    
-2. Optional requirments
-    - 1 Load Balancer Node if using more than 1 master node -  ( 1 vcpu - 1 gig ram - 10 gb disk)
-    - N ETCD Node for installing etcd seperate from master nodes  - ( 1 vcpu - 1 gig ram - 10 gb disk)
-2. OS and other requirments
-    - Ubuntu 18.4 LTS tested
-4. SSH Configuration
-    - RSA Key based authentication with userid  (with Password auth set to false)
-5. Set the configured uses to use sudo command with no password , follow the link below  
-    - https://www.tecmint.com/run-sudo-command-without-password-linux/ 
-5. IPv4 IP Address and ability to ssh and ping to the nodes from the local network
-6. Local machine require following client tools in order to run the scripts
-    - cfssljson , cfssl and kubectl ( install them under /usr/local/bin )
+Note: Scripts need to be run from devloper laptop/machine. 
+
+# Steps to Perform
 
 
-# Steps to execute  
+1. Install the WSL2 on Windows 10 and use Ubuntu Distro (18.04 or 20.04), follow the steps as per the given link
 
-Note: Sripts need to be run from a local machine. This machine should be able to ping and ssh k8s install machines as specified in variables.sh file. This way we need not to ssh and login on any k8s machine for install.
+    https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps
+   
+2. Start WSL Session and Clone the repository to a k8s-bare-metal folder 
+3. CD to k8s-bare-metal directory
+4. Create vms on laptop/desktop using multipass, follow the instructions  given in MULTIPASS.md
+5. Verify the variables.sh file and update based on the vms created using multipass, make sure to save the file after changes 
+    - Cluster name - local-k8s-cluster
+    - Control Plane Nodes - {local-k8s-master}
+    - Load Balancer Node  - {local-k8s-master}
+    - ETCD Node           - {local-k8s-master}
+    - Worker Plane Node   - {local-k8s-node1,local-k8s-node2}
+    - SSH_USER            - "k8suser"
+    - SSH_KEY             - "k8suser-key"  
 
-
-PreReq -  Install cfssljson , cfssl and kubectl on local machine.  Install them under /usr/local/bin folder.
-la
-1. Clone the repository on a local machine (Windows WSL or Linux) this is a different machine than specified in variables.sh for k8s cluster.
-2. CD to k8s-bare-metal directory
-3. Verify the variables.sh file and update variables for following
-    - Cluster name
-    - Control Plane Nodes
-    - Load Balancer Node
-    - ETCD Node
-    - Worker Plane Node
-4. Save the variables file after updating
-5. Make sure you are able to ssh to the nodes used in variables file from the local shell, if any issues resolve it.
 6. Run the scripts in following order from inside k8s-bare-metal directory
     - bash 1_install_control_plane.sh ( verify the log output to make sure there is no critical error)
     - bash 2_install_worker_plane.sh ( verify the log output to make sure there is no critical error)
     - bash 3_install_network_plane.sh ( verify the log output to make sure there is no critical error)
     - bash 4_verify_cluster.sh ( verify the log output to make sure there is no critical error)
-7. You should be able to use now kubectl from your local shell, (It will remove the existing kubeconfig , please back it up)
+  
+7. You should be able to use now kubectl from your local shell (WSL/LINUX)
