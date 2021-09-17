@@ -1,10 +1,5 @@
-# mulitpass vms
+Optional - Use multipass for creating local vms
 
-https://github.com/arashkaffamanesh/kubeadm-multipass
-
-https://discourse.ubuntu.com/t/multipass-exec-command/10851
-
-## Multipass vms on Windows 10
 1. Enable Hyper-V in Windows 10
    
    https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v
@@ -21,10 +16,10 @@ https://discourse.ubuntu.com/t/multipass-exec-command/10851
 
 4. Generate openssh priavate/public keypair to be used for login via ssh
 
-    - run ssh-keygen from the multipass folder generate private/public key pair 
-    - generate user-key and user-key.pub file inside the multipass folder
+    - run ssh-keygen from k8s-bare-metal folder generate private/public key pair 
+    - generate k8suser-key and k8suser-key.pub file inside the multipass folder
 
-5. Update the cloud-init.yaml file correct ssh key by replacing the ssh_authroized_key value to user-key.pub file content
+5. Update the cloud-init.yaml file by replacing the ssh_authroized_key value to k8suser-key.pub file content
 
 
 Example: cloud-init.yaml
@@ -40,12 +35,10 @@ users:
 
 6. Provision 3 machines as following by running this command from the multipass folder
 
-multipass launch -n=local-k8s-master --network name=multipass,mode=auto -c=1 -m=8G -d=20G --cloud-init=cloud-init.yaml
+multipass launch -n=local-k8s-master --network name=multipass,mode=auto -c=1 -m=4G -d=20G --cloud-init=cloud-init.yaml
 
-multipass launch -n=local-k8s-node1 --network name=multipass,mode=auto -c=1 -m=8G -d=20G --cloud-init=cloud-init.yaml
+multipass launch -n=local-k8s-node1 --network name=multipass,mode=auto -c=1 -m=4G -d=10G --cloud-init=cloud-init.yaml
 
-multipass launch -n=local-k8s-node2 --network name=multipass,mode=auto -c=1 -m=8G -d=20G --cloud-init=cloud-init.yaml
-
-
+multipass launch -n=local-k8s-node2 --network name=multipass,mode=auto -c=1 -m=4G -d=10G --cloud-init=cloud-init.yaml
 
 
