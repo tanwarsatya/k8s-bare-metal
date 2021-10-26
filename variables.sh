@@ -3,19 +3,19 @@
 # ***************************************************************************
 # common variables
 # ***************************************************************************
-# User name and key for remote login on vms for deploying cluster component
+# User name and key file for remote login on vms for deploying cluster component
 SSH_USER="k8suser"
 SSH_CERT="k8suser-key"
 
 # Cluster Name
-CLUSTER_NAME="local-k8s-cluster"
+CLUSTER_NAME="easy-k8s-cluster"
 
 #VM and Node Name
 #############################################
-declare -a CONTROL_PLANE_NODES=("local-k8s-master")
-declare -a CONTROL_PLANE_ETCD_NODES=("local-k8s-master")
-declare -a WORKER_PLANE_NODES=("local-k8s-node1" "local-k8s-node2")
-CLUSTER_API_LOAD_BALANCER="local-k8s-master"
+declare -a CONTROL_PLANE_NODES=("k8s-master-1")
+declare -a CONTROL_PLANE_ETCD_NODES=("k8s-master-1")
+declare -a WORKER_PLANE_NODES=("k8s-node-1" "k8s-node-2")
+CLUSTER_API_LOAD_BALANCER="k8s-master-1"
 
 # Version 
 ##############################################
