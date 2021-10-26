@@ -1,7 +1,7 @@
 #!/bin/sh
 source variables.sh
 
-echo "k8s-bare-metal"
+echo $CLUSTER_NAME
 echo "control plane installation"
 
 # pre steps
