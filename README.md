@@ -15,9 +15,9 @@ Note: Scripts need to be run from devloper laptop/machine.
 
     https://docs.microsoft.com/en-us/windows/wsl/install-win10#manual-installation-steps
    
-2. Start WSL Session and Clone the repository to a k8s-bare-metal folder 
+2. Start WSL Session and Clone the repository to a k8s-bare-metal folder.
 3. CD to k8s-bare-metal directory
-4. Create vms on laptop/desktop using multipass, follow the instructions  given in MULTIPASS.md
+4. Create vms on laptop/desktop or use physical machines in local network.
 5. Verify the variables.sh file and update based on the vms created using multipass, make sure to save the file after changes 
     - Cluster name - local-k8s-cluster
     - Control Plane Nodes - {local-k8s-master}
