@@ -6,4 +6,4 @@ echo "--------------------------------"
 
 mkdir -p certs
 
-cfssl gencert -initca config/ca-csr.json | cfssljson -bare cert/ca
+bin/cfssl gencert -initca config/ca-csr.json | bin/cfssljson -bare cert/ca

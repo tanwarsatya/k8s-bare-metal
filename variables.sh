@@ -5,7 +5,7 @@
 # ***************************************************************************
 # User name and key file for remote login on vms for deploying cluster component
 SSH_USER="k8suser"
-SSH_CERT="k8suser-key"
+SSH_CERT="k8suser"
 
 # Cluster Name
 CLUSTER_NAME="easy-k8s-cluster"
