@@ -9,33 +9,9 @@ echo "control plane installation"
 rm -rf control-plane/output
 mkdir -p control-plane/output
 
-#generate root cert if not available 
-CA_PEM_FILE=cert-authority/certs/ca.pem
-CA_KEY_FILE=cert-authority/certs/ca-key.pem
+# Generate root certs
+bash cert-authority/generate_ca_cert.sh
 
-if [ -f "$CA_PEM_FILE" ] && [ -f "$CA_KEY_FILE" ]; then 
-echo " Root CA File exists : ca.pem and ca-key.pem exists, using existing root ca files."
-else
-echo " No Root CA file found generating new ca files."
-mkdir -p cert-authority/certs
-
-# Download cfssl and cfsjson
-echo "Downloading cfssl and cfsljson"
-wget -q --show-progress --https-only --timestamping \
-  https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssl_${CFSSL_VERSION}_linux_amd64 \
-  https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssljson_${CFSSL_VERSION}_linux_amd64
-
-#allow execute and copy to /usr/local/bin
-echo "moving to /usr/local/bin"
-chmod +x cfssl_${CFSSL_VERSION}_linux_amd64
-chmod +x cfssljson_${CFSSL_VERSION}_linux_amd64 
-
-sudo mv cfssl_${CFSSL_VERSION}_linux_amd64 /usr/local/bin/cfssl
-sudo mv cfssljson_${CFSSL_VERSION}_linux_amd64 /usr/local/bin/cfssljson
-
-
-cfssl gencert -initca cert-authority/config/ca-csr.json | cfssljson -bare cert-authority/certs/ca
-fi
 
 # Generate control plane certs
 bash control-plane/generate_control_plane_certs.sh
@@ -55,6 +31,3 @@ bash control-plane/install_haproxy.sh
 
 #Install K8s control plane components
 bash control-plane/install_k8s.sh
-
-
-
