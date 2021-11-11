@@ -1,7 +1,7 @@
 #!/bin/sh
 source variables.sh
 
-# starting the install
+# starting the install another comment
 echo $CLUSTER_NAME
 echo "control plane installation"
 
