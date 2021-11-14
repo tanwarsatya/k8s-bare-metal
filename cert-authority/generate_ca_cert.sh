@@ -16,7 +16,9 @@ if [ -f "$CA_PEM_FILE" ] && [ -f "$CA_KEY_FILE" ]; then
 echo " Root CA File exists : ca.pem and ca-key.pem exists, using existing root ca files."
 else
 echo " No Root CA file found generating new ca files."
-mkdir -p certs
+echo " Creating cert-authority/certs directory"
+
+mkdir -p cert-authority/certs
 
 # Download cfssl and cfsjson
 echo "Downloading cfssl and cfsljson"

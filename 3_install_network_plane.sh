@@ -27,11 +27,30 @@ case $CLUSTER_CNI_PROVIDER in
     kubectl delete -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/generic-kuberouter.yaml
     
     echo "applying kube-router cni plugin"
-    kubectl apply -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/generic-kuberouter.yaml
+    #kubectl apply -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/generic-kuberouter.yaml
     ;;
 
   calico)
     echo "applying calico cni plugin"
     kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
     ;;
+    
+  cilium)
+    echo "applying cilium cni plugin"
+    
+    echo "download cilium cli"
+    
+    curl -L --remote-name-all https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}
+    
+    sha256sum --check cilium-linux-amd64.tar.gz.sha256sum
+
+    sudo tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
+
+    rm cilium-linux-amd64.tar.gz{,.sha256sum}
+
+    cilium install
+    
+    cilium status --wait
+
+    ;;  
 esac

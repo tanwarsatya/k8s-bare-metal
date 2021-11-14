@@ -39,8 +39,8 @@ WORKER_PLANE_CRI_TOOLS_VERSION="v1.22.0"
 CLUSTER_CIDR="10.32.0.0/12"
 # Cluster Service CIDR
 CLUSTER_SVC_CIDR="10.32.0.0/16"
-# choose a provide from kube-router , calico , cillium or weavenet. ( only tested kube-router keep it to kube-router)
-CLUSTER_CNI_PROVIDER="kube-router"
+# choose a provide from kube-router , calico , cilium or weavenet. ( only tested kube-router keep it to kube-router)
+CLUSTER_CNI_PROVIDER="cilium"
 # max number of pods to run on a node -default is 110
 WORKER_PLANE_MAX_PODS=200
 # Cluster TLS BOOT STRAPPING ALLOWED FOR WORKER NODES ( NOT TESTED YET - keep it false for now)
