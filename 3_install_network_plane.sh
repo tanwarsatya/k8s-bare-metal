@@ -19,24 +19,42 @@ kubectl apply -f control-plane/config/kubelet-auth-role-binding.yaml
 echo "apply tls boot straping token"
 kubectl apply -f control-plane/output/bootstrap-token-${BOOTSTRAP_TOKEN_ID}.yaml
 
+
+echo "--------------------Remove CNI ----------------------------"
+echo "reset existing kube-router cni plugin"
+echo "--------------------------------------------------"
+kubectl delete -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/generic-kuberouter.yaml
+
+echo "reset existing calico cni plugin"
+echo "--------------------------------------------------"
+kubectl delete -f https://docs.projectcalico.org/manifests/calico.yaml
+
+echo "reset existing cilium cni plugin"
+echo "--------------------------------------------------"
+cilium uninstall 
+
+  
+
+echo "--------------------Apply CNI ----------------------------"
+    
 # Network configuraiton
 case $CLUSTER_CNI_PROVIDER in
 
   kube-router)
-    echo "reset existing kube-router cni plugin"
-    kubectl delete -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/generic-kuberouter.yaml
-    
     echo "applying kube-router cni plugin"
+    echo "--------------------------------------------------"
     #kubectl apply -f https://raw.githubusercontent.com/cloudnativelabs/kube-router/master/daemonset/generic-kuberouter.yaml
     ;;
 
   calico)
+
+    
     echo "applying calico cni plugin"
+    echo "--------------------------------------------------"
     kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
     ;;
     
   cilium)
-    echo "applying cilium cni plugin"
     
     echo "download cilium cli"
     
@@ -48,9 +66,13 @@ case $CLUSTER_CNI_PROVIDER in
 
     rm cilium-linux-amd64.tar.gz{,.sha256sum}
 
+    
+    echo "apply cilium cni plugin"
+    echo "--------------------------------------------------"
     cilium install
     
-    cilium status --wait
-
+    
     ;;  
+
+   
 esac
