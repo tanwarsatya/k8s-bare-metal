@@ -8,14 +8,14 @@ SSH_USER="k8suser"
 SSH_CERT="k8suser"
 
 # Cluster Name
-CLUSTER_NAME="easy-k8s-cluster"
+CLUSTER_NAME="stanwar-cluster"
 
 #VM and Node Name
 #############################################
-declare -a CONTROL_PLANE_NODES=("k8s-master-1")
-declare -a CONTROL_PLANE_ETCD_NODES=("k8s-master-1")
-declare -a WORKER_PLANE_NODES=("k8s-node-1" "k8s-node-2")
-CLUSTER_API_LOAD_BALANCER="k8s-master-1"
+declare -a CONTROL_PLANE_NODES=("k8s-master")
+declare -a CONTROL_PLANE_ETCD_NODES=("k8s-master")
+declare -a WORKER_PLANE_NODES=("node-1" "node-2")
+CLUSTER_API_LOAD_BALANCER="k8s-master"
 
 #Network Range and CNI
 #############################################

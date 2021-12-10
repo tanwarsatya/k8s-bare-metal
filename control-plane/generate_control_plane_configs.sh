@@ -108,12 +108,12 @@ echo "3. Generating admin.kubeconfig"
     --embed-certs=true \
     --kubeconfig=control-plane/output/admin.kubeconfig
 
-  kubectl config set-context default \
+  kubectl config set-context ${CLUSTER_NAME} \
     --cluster=${CLUSTER_NAME} \
     --user=admin \
     --kubeconfig=control-plane/output/admin.kubeconfig
 
-  kubectl config use-context default --kubeconfig=control-plane/output/admin.kubeconfig
+  kubectl config use-context ${CLUSTER_NAME} --kubeconfig=control-plane/output/admin.kubeconfig
 }
 
 
@@ -162,11 +162,11 @@ echo "3. Generating ${CLUSTER_NAME}.kubeconfig"
     --embed-certs=true \
     --kubeconfig=control-plane/output/${CLUSTER_NAME}.kubeconfig
 
-  kubectl config set-context default \
+  kubectl config set-context ${CLUSTER_NAME} \
     --cluster=${CLUSTER_NAME} \
     --user=admin \
     --kubeconfig=control-plane/output/${CLUSTER_NAME}.kubeconfig
 
-  kubectl config use-context default --kubeconfig=control-plane/output/${CLUSTER_NAME}.kubeconfig
+  kubectl config use-context ${CLUSTER_NAME}--kubeconfig=control-plane/output/${CLUSTER_NAME}.kubeconfig
 }
 

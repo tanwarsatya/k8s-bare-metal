@@ -6,11 +6,16 @@ echo "--------------------------------"
 echo "post install for network, rbac and other configurations"
 echo "--------------------------------"
 
-# Add the config file for the current user
-echo "copy $CLUSTER_NAME.kubeconfig to /home/$USER/.kube/config for local kubectl"
+
+# Install Krew plugins
+bash install_krew_plugins.sh
+echo "merge $CLUSTER_NAME.kubeconfig to /home/$USER/.kube/config for local kubectl"
 mkdir -p /home/$USER/.kube
-cp  control-plane/output/$CLUSTER_NAME.kubeconfig /home/$USER/.kube/config
-chmod 777 /home/$USER/.kube/config
+echo "import kubeconfig via konfig plugin"
+kubectl konfig import --save control-plane/output/$CLUSTER_NAME.kubeconfig
+echo "change context of the kubectl to $CLUSTER_NAME"
+kubectl config use-context $CLUSTER_NAME
+
 
 # RBAC and other related confiurations
 echo "apply rbac role and rolebinding for kubelet"
